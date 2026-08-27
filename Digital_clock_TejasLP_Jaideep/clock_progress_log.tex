@@ -1,0 +1,1803 @@
+\let\negmedspace\undefined
+\let\negthickspace\undefined
+\documentclass[journal,12pt,onecolumn]{IEEEtran}
+\usepackage{graphicx} % Add this before \begin{document}
+	
+	% --- CUSTOM GVV PACKAGES ---
+	\usepackage{cite}
+	\usepackage{gvv-book}
+	\usepackage{amsmath,amssymb,amsfonts,amsthm}
+	\usepackage{algorithmic}
+	\usepackage{graphicx}
+	\usepackage{textcomp}
+	\usepackage{xcolor}
+	\usepackage{colortbl}
+	\usepackage{txfonts}
+	\usepackage{listings}
+	\usepackage{enumitem}
+	\usepackage{mathtools}
+	\usepackage{gensymb}
+	\usepackage{comment}
+	\usepackage{ragged2e}
+	\usepackage[breaklinks=true]{hyperref}
+	\usepackage[latin1]{inputenc}
+	\usepackage{array}
+	\usepackage{longtable}
+	\usepackage{calc}
+	\usepackage{multirow}
+	\usepackage{hhline}
+	\usepackage{ifthen}
+	\usepackage{lscape}
+	\usepackage{tabularx}
+	\usepackage{float}
+	\usepackage{caption}
+	\usepackage{gvv}
+	\usepackage{etoolbox}
+	\definecolor{grpRed}{rgb}{1.0, 0.8, 0.8}
+	\definecolor{grpGreen}{rgb}{0.8, 1.0, 0.8}
+	\definecolor{grpYellow}{rgb}{1.0, 1.0, 0.8}
+	% --- ADDITIONAL PACKAGES ---
+	\usepackage{pgfplots}
+	\pgfplotsset{compat=1.18}
+	
+	% --- METADATA & TITLE BLOCK ---
+	\title{Digital Clock} \vspace{0.3cm}
+	\author{IIT Hyderabad \\ \vspace{0.1cm}
+		Department of Electrical Engineering [ICDT] \\ 
+		\vspace{0.55cm}EE1010     \\ Maths For Electrical Engineering \\ \vspace{0.15cm} Prof. G.~V.~V. Sharma \\\vspace{0.8cm}
+		Tejas L P \hspace{4.3cm} Jaideep Singh \\ EE26BTECH11231 \hspace{2.8cm} EE26BTECH11213 \\\vspace{0.2cm} }
+	\date{\today}
+	
+	\begin{document}
+		
+		\maketitle
+		\section{Project Overview}
+		\noindent \textbf{Project Objective:} \\
+		To design and implement a 6-digit 24-hour multiplexed digital clock (\textbf{HH:MM:SS}) featuring an integrated software timer function using the Arduino framework, an IC 7447 BCD-to-seven-segment decoder, and Boolean transition logic minimized via Karnaugh maps (K-maps).
+		
+		\noindent \textbf{Key Features:}
+		\begin{enumerate}
+			\item \textbf{24-Hour Timekeeping:} Hours ($00\text{--}23$), Minutes ($00\text{--}59$), Seconds ($00\text{--}59$).
+			\item \textbf{Custom Software Timer/Stopwatch:} Configured via software timing interrupts and operated using a dedicated control button.
+			\item \textbf{Display Multiplexing:} Six common-anode displays driven by a single IC 7447 decoder with a $166.7\text{ Hz}$ overall refresh rate.
+			\item \textbf{Interactive 5-Button User Interface:} Dedicated controls for calibration, digit cycling, increment/decrement, and timer mode switching.
+		\end{enumerate}
+			\section{Components}
+		\begin{itemize}
+			\item \textbf{Arduino Uno:}1 
+			\item \textbf{USB Cable (Type B):}1 
+			\item \textbf{Seven Segment Display (Common Anode):}6 
+			\item \textbf{Push Buttons:}5 
+			\item \textbf{IC 7447:}1 
+			\item \textbf{Jumper Wires (M-M):}80 
+			\item \textbf{Breadboard:}1 
+			\item \textbf{Resistors ($240\Omega$):}7
+		\end{itemize}
+		\newpage
+		
+	
+\section*{Table of Contents}
+
+% Adding some padding at the top
+\vspace{1cm}
+
+\begin{enumerate}
+	% This command increases the vertical space between each main item
+	\setlength{\itemsep}{1.1em} 
+	
+	\item Project Overview \hfill 1
+	\item Components \hfill 1
+	\item A Neat Look At The Finished Digital Clock \hfill 3
+	\item \textbf{Project Progress Log and Engineering Challenges} \hfill 4
+	\begin{itemize}
+		% This command increases the vertical space between sub-items
+		\setlength{\itemsep}{0.8em} 
+		
+		\item \textbf{Phase 1}: Component Research and Circuit Planning \hfill 4
+		\item \textbf{Phase 2}: Sequential Assembly and the Tail Fix (Seconds Stage) \hfill 9
+		\item \textbf{Phase 3}: Expanding to Minutes and Hours \hfill 13
+		\item \textbf{Phase 4}: Final 5-Button Interface, Timer, and State Debugging \hfill 19
+	\end{itemize}
+	\item Project Reflections and Learning Outcomes \hfill 21
+	\item Hardware Interfacing and Pin Allocation \hfill 22
+	\item Display Interface: IC 7447 and Common Anode Configuration \hfill 25
+	\item Arduino Uno Hardware Overview \hfill 28
+	\item Combinational Counter Logic (Forward Counting) \hfill 29
+	\item \textbf{Mod-10 Stage Derivations (4-Variable: $Z, Y, X, W$)} \hfill 30
+	\item \textbf{Mod-6 Stage Derivations (3-Variable: $Y, X, W$)} \hfill 33
+	\item \textbf{Mod-4 \& Mod-3 Stage Derivations (2-Variable: $X, W$)} \hfill 36
+	\item \textbf{Reverse Decrement Logic for Calibration} \hfill 39
+	\item Multiplexing and Software Timer Architecture \hfill 42
+	\item Push-Button Interfacing and Input Debouncing \hfill 43
+	\begin{itemize}
+		\setlength{\itemsep}{0.8em}
+		\item Mechanical Switch Bouncing \hfill 43
+		\item Principle of Software Debouncing \hfill 44
+		\item Implementation Using \texttt{delay()} \hfill 44
+	\end{itemize}
+	\item Teamwork and Acknowledgements \hfill 45
+\end{enumerate}
+
+% Adding some padding at the bottom
+\vspace{1cm}
+
+\newpage
+		
+		
+		\section{\textbf{A Neat Look At the Finished Digital Clock}}
+		\begin{figure}[H] % <--- Add [H] right here
+			\centering
+			\includegraphics[width=0.7\linewidth]{Complete1.jpeg}
+			\caption{The completed circuitry along with taped up Wires}
+			\label{fig:placeholder}
+		\end{figure}
+		
+		\begin{figure}[H] % <--- Add [H] right here
+			\centering
+			\includegraphics[width=0.75\linewidth]{Complete2.jpeg}
+			\caption{Illustrating the complete functionality of each display}
+			\label{fig:placeholder}
+		\end{figure}
+		\newpage
+	
+		\section{\textbf{Project Progress Log and Engineering Challenges}}
+		
+		\subsection*{\textbf{Phase 1}: Component Research and Circuit Planning}
+		\begin{itemize}
+			\item \textbf{Objective:} Understand the functional behavior of the individual ICs and displays to plan the physical breadboard layout for the 6-digit multiplexed digital clock.
+			\item \textbf{Research and Pin Mapping:} Studied the pin configurations and driving characteristics of the IC 7447 BCD decoder, 7-segment displays, and the ATmega328P microcontroller.
+			\item \textbf{Power and Bus Layout:} Established dedicated continuous rails on the breadboard (outermost rail to Arduino $+5\text{V}$, second outermost rail to $\text{GND}$) and planned the shared 7-segment bus ($a\text{--}g$) to avoid crossing jumper wires across the central IC bridge.
+		\end{itemize}
+		
+		\subsubsection*{Challenge 1: Full-Circuit Assembly Failure and Polarity Diagnosis}
+		\begin{itemize}
+			\item \textbf{Monolithic Assembly Attempt:} The entire 6-digit circuit, decoder IC, and push-button network were wired all at once based on the initial schematic. Upon powering the Arduino, the clock failed to increment or display legible numbers, resulting only in erratic flickering across all displays.
+			
+			\begin{figure}[H] % <--- Add [H] right here
+				\centering
+				\includegraphics[width=0.5\linewidth]{PowerOn.png}
+				\caption{All the Segments have turned on}
+				\label{fig:placeholder}
+			\end{figure}
+			
+			\begin{figure}[H] % <--- Add [H] right here
+				\centering
+				\includegraphics[width=0.75\linewidth]{Completed_Circuit_InitialFail.jpg}
+				\caption{Circuit without any power}
+				\label{fig:placeholder}
+			\end{figure}
+			
+			\begin{figure}[H] % <--- Add [H] right here
+				\centering
+				\includegraphics[width=0.75\linewidth]{InitialFail2.jpg}
+				\caption{A side view of the figure}
+				\label{fig:}
+			\end{figure}
+			
+			
+			\item \textbf{Modular Isolation (Seconds Stage):} To isolate the root cause, the full circuit was stripped down to a single display to test only the Seconds Units digit ($0 \to 9$) with the IC 7447.
+			\item \textbf{Fault Assessment \& Polarity Testing:} Even on a single digit, segments behaved irregularly. A manual polarity test was conducted using a $220\,\Omega$ current-limiting resistor to verify each display:
+			
+			\textbf{Common Anode Display (CA) Test Procedure:}
+			\begin{enumerate}
+				\item Connect a jumper wire from Arduino $+5\text{V}$ directly to the display $COM$ pin (Pin 3 or Pin 8).
+				\item Connect a jumper wire from Arduino $\text{GND}$ to one leg of a $220\,\Omega$ resistor.
+				\item Connect the other leg of the resistor to Pin 7 (segment $a$) or Pin 6 (segment $b$).
+				\item If segment $a$ or $b$ illuminates, the display is Common Anode ($4$ displays passed this test).
+			\end{enumerate}
+			
+			\begin{figure}[H] % <--- Add [H] right here
+				\centering
+				\includegraphics[width=0.75\linewidth]{CommonAnode2.jpeg}
+				\caption{Common Anode Test negative for a display}
+				\label{fig:}
+			\end{figure}
+			
+			\textbf{Common Cathode Display (CC) Test Procedure:}
+			\begin{enumerate}
+				\item Reverse the connections: connect Arduino $\text{GND}$ to the $COM$ pin.
+				\item Connect Arduino $+5\text{V}$ through the $220\,\Omega$ resistor to Pin 7 (segment $a$) or Pin 6 (segment $b$).
+				\item If segment $a$ or $b$ illuminates under this configuration, the display is Common Cathode ($2$ displays passed this test).
+			\end{enumerate}
+			
+			\begin{figure}[H] % <--- Add [H] right here
+				\centering
+				\includegraphics[width=0.75\linewidth]{CommonAnode1.jpeg}
+				\caption{Common Cathode Test positive for the same display}
+				\label{fig:}
+			\end{figure}
+			
+			
+			\item \textbf{Diagnosis \& Resolution:} The testing confirmed that two of the displays in the kit were Common Cathode (CC) instead of Common Anode (CA). Because the IC 7447 uses active-LOW open-collector outputs designed to sink current from a common positive rail, the Common Cathode displays could not function, resulting in erratic flickering and random outputs. Replacing the two mismatched units with verified Common Anode displays resolved the issue and allowed the single-digit Seconds Units counter to work as intended.
+		\end{itemize}
+		\newpage
+		\subsection*{\textbf{Phase 2}: Sequential Assembly and the Tail Fix (Seconds Stage)}
+		\begin{itemize}
+			\item \textbf{Direct Microcontroller Verification (No IC):} Before integrating the BCD decoder, the baseline functionality of the Seconds Units display was verified. The segment pins were wired directly to the Arduino I/O pins through $220\Omega$ current-limiting resistors. This direct-drive configuration confirmed the basic sequential counting logic and individual LED segment integrity independently of the IC.
+			
+			\begin{figure}[H] % <--- Add [H] right here
+				\centering
+				\includegraphics[width=0.6\linewidth]{Seconds(6).jpeg}
+				\caption{Testing Seconds(Note the problem with the tail of 6)}
+				\label{fig:}
+			\end{figure}
+			\begin{figure}[H] % <--- Add [H] right here
+				\centering
+				\includegraphics[width=0.5\linewidth]{CorrectedSecondsNoIC.png}
+				\caption{Correcting tail segment display}
+				\label{fig:}
+			\end{figure}
+			
+			\begin{figure}[H] % <--- Add [H] right here
+				\centering
+				\includegraphics[width=0.75\linewidth]{Corrected9_secondsNoIC.jpg}
+				\caption{Correcting tail segment display of 9}
+				\label{fig:}
+			\end{figure}
+			\item \textbf{Seconds Multiplexing Setup:} Following the successful direct verification, the full seconds stage was assembled. The display enable lines for the Seconds Tens and Seconds Units were routed to Arduino pins D8 and D9, respectively. The displays were successfully driven by the IC 7447 BCD bus utilizing Arduino pins D2 through D5.
+			
+			\item \textbf{The Numerals 6 and 9 Rendering Flaw:} Upon testing the seconds cascade, it was observed that the standard IC 7447 decoder fails to illuminate the top segment for the numeral `6` and the bottom segment for the numeral `9`. 
+			
+			\item \textbf{Hardware Tail Fix Solution:} To render complete digits, an auxiliary hardware override was implemented. Arduino pin D6 was hardwired directly to the segment $a$ line on the display bus, and pin D7 was wired to the segment $d$ line. The microcontroller software was updated to manually pull these specific pins LOW (sinking the current) only when the respective states for $6$ and $9$ are active, successfully rendering the missing tails.
+			
+			\begin{figure}[H] % <--- Add [H] right here
+				\centering
+				\includegraphics[width=0.75\linewidth]{CorrectedSeconds.png}
+				\caption{Correcting display with IC 7447 in the circuit}
+				\label{fig:}
+			\end{figure}
+			
+			\begin{figure}[H] % <--- Add [H] right here
+				\centering
+				\includegraphics[width=0.75\linewidth]{TensSeconds.jpg}
+				\caption{Enabling tens digits of seconds}
+				\label{fig:}
+			\end{figure}
+			
+			\begin{figure}[H] % <--- Add [H] right here
+				\centering
+				\includegraphics[width=0.75\linewidth]{TensSeconds2.jpg}
+				\caption{Enabling tens digits of seconds}
+				\label{fig:}
+			\end{figure}
+			
+		\end{itemize}
+		
+		\newpage
+		\subsection*{\textbf{Phase 3}: Expanding to Minutes and Hours}
+		\begin{itemize}
+			\item \textbf{Minutes Integration:} The parallel cathode bus was extended to incorporate the third and fourth displays. The enable lines for the Minutes Tens and Minutes Units were mapped to Arduino pins D11 and D10. 
+			
+			\begin{figure}[H] % <--- Add [H] right here
+				\centering
+				\includegraphics[width=0.75\linewidth]{MinutesOnes.jpg}
+				\caption{Checking Units digit of minutes}
+				\label{fig:}
+			\end{figure}
+			
+			\begin{figure}[H] % <--- Add [H] right here
+				\centering
+				% Add angle=-90 (or angle=90) to correct the orientation
+				\includegraphics[width=0.75\linewidth, angle=90]{MinutesTens1.jpg}
+				\caption{Checking Tens digit of minutes}
+				\label{fig:}
+			\end{figure}
+			\item \textbf{Hours Integration:} The final two displays were added to complete the 6-digit array. The Hours Tens enable was connected to A0, and the Hours Units enable to D12. At this stage, the full $166.7\text{ Hz}$ multiplexing cycle was tested to ensure the breadboard power rails could support all six displays without dimming or severe parasitic leakage.
+			
+			\vspace{0.4cm}
+			
+			\subsubsection*{Challenge 2: Parasitic Current Leakage}
+			\begin{itemize}
+				\item \textbf{Observed Issue:} Connecting one specific Common Anode display caused segment $d$ across all other displays to illuminate unexpectedly. In addition, one segment of the faulty display flickered continuously while producing random, corrupted outputs across the units and seconds displays.
+				\item \textbf{Diagnosis \& Resolution:} This behavior pointed to internal current leakage within the module, which was confirmed through trial-and-error testing. Replacing the defective display eliminated the cross-feed and restored proper bus operation.
+			\end{itemize}
+			
+			\begin{figure}[H] % <--- Add [H] right here
+				\centering
+				\includegraphics[width=0.75\linewidth]{Faulty_display.jpeg}
+				\caption{One of the displays were dull, and the d segments are lighted up}
+				\label{fig:}
+			\end{figure}  
+			
+			\subsubsection*{Challenge 3: Loose Connections, Timing Faults, and Circuit Reconstruction}
+			\begin{itemize}
+				\item \textbf{Wiring Instability:} Swapping out display modules at an advanced stage of assembly disturbed the densely packed layout, causing multiple loose wire connections across the breadboard.
+				\item \textbf{Overly Accelerated Delay:} To quickly verify 24-hour rollover ($23:59:59 \to 00:00:00$), the update delay was temporarily reduced from $1\text{ s}$ down to $7\text{ ms}$. This rapid refresh rate caused input/execution instability in the Arduino, leading to segment failures and visual flickering.
+				\item \textbf{Resolution \& Complete Reconstruction:} Because the crowded wiring harness prevented easy pinpoint debugging, the entire circuit had to be completely broken apart and rebuilt from scratch, re-testing the seconds and minutes stages sequentially. For 24-hour rollover verification ($23:59:59 \to 00:00:00$), the test delay was set to $125\text{ ms}$---a reliable interval that enabled rapid visual tracking while guaranteeing clean signal transitions and stable time-division multiplexing. With the reconstructed setup and balanced timing, a clear, stable visual output was achieved, rendering the digital clock fully functional across all six displays.
+			\end{itemize}
+			
+			
+			\newpage
+			\begin{lstlisting}[language=C, caption=Changing delay between 2 seconds on the clock - Very small Interval]
+				
+	void updateClock() {
+	// Pause clock counting while editing the clock time
+	if (editMode && currentMode == MODE_CLOCK) {
+	lastClockTick = millis(); // Reset timestamp-time doesn't jump forward upon exiting edit
+		return;
+	}
+			
+	if (millis() - lastClockTick >= 7) {// changing 1000 to 7
+		lastClockTick = millis();
+		clockSec++;
+		if (clockSec >= 60) {
+			clockSec = 0;
+			clockMin++;
+			if (clockMin >= 60) {
+				clockMin = 0;
+				clockHr++;
+				if (clockHr >= 24) clockHr = 0;
+			}
+		}
+	}
+}
+				
+				
+			\end{lstlisting}
+			
+			\begin{lstlisting}[language=C, caption=Changing delay between 2 seconds on the clock - Appreciable Interval]
+				
+	void updateClock() {
+		// Pause clock counting while editing the clock time
+		if (editMode && currentMode == MODE_CLOCK) {
+	lastClockTick = millis(); // Reset timestamp-time doesn't jump forward upon exiting edit
+			return;
+	}
+					
+		if (millis() - lastClockTick >= 125) {// changing 1000 to 125
+			lastClockTick = millis();
+			clockSec++;
+			if (clockSec >= 60) {
+				clockSec = 0;
+				clockMin++;
+				if (clockMin >= 60) {
+					clockMin = 0;
+					clockHr++;
+					if (clockHr >= 24) clockHr = 0;
+				}
+			}
+		}
+	}
+				
+				
+			\end{lstlisting}
+			
+			\begin{figure}[H] % <--- Add [H] right here
+				\centering
+				\includegraphics[width=0.75\linewidth]{HoursNoButtons.jpg}
+				\caption{Setting up the hours displays}
+				\label{fig:}
+			\end{figure}
+			
+			\begin{figure}[H] % <--- Add [H] right here
+				\centering
+				\includegraphics[width=0.75\linewidth]{Hours.jpeg}
+				\caption{Verifying reset of $23:59:59$}
+				\label{fig:}
+			\end{figure}
+			
+			\begin{figure}[H] % <--- Add [H] right here
+				\centering
+				\includegraphics[width=0.75\linewidth]{Hoursreset.jpg}
+				\caption{Working Reset}
+				\label{fig:}
+			\end{figure}
+			
+		\end{itemize}
+		
+		\newpage
+		
+		\subsection*{\textbf{Phase 4}: Final 5-Button Interface, Timer, and State Debugging}
+		\begin{itemize}
+			\item \textbf{Tactile Button Integration:} A 5-button user interface was integrated using Arduino analog pins A1 through A5, configured as digital inputs utilizing the internal \texttt{INPUT\_PULLUP} resistors to eliminate floating noise. The control mapping was finalized as follows: Edit Mode Toggle (A1), Next Digit Selection (A2), Increment (A3), Decrement (A4), and Timer Mode Toggle (A5).
+			
+			\item \textbf{Stopwatch Facility:} Button 5 (A5) was programmed to switch the system from standard 24-hour timekeeping to a custom software stopwatch/timer utilizing software timing interrupts.All displays begin flickering together once the timer reaches $00:00:00$. To stop this, click Button 5 again to enter into normal time-Keeping mode
+			
+			
+			\subsubsection*{Challenge 4: Edit mode Bug troubleshooting}
+			\begin{itemize}
+				
+				
+				\item \textbf{Troubleshooting Edit Mode (Clock Halting Bug):} Initially, when entering calibration mode via Button 1, the background timer interrupt continued to run, causing the time to advance while the user was attempting to edit the digits. 
+				
+				\item \textbf{State Machine Resolution:} To resolve this, a software state flag was introduced. When Button 1 (A1) toggles the system into Edit Mode, the background clock tick is completely bypassed. The clock is forced to pause, and the selected digit blinks at $5\text{ Hz}$ ($200\text{ ms}$ ON, $200\text{ ms}$ OFF) to provide visual feedback. Timekeeping only resumes once the system is toggled back into Run Mode, ensuring precise digit-by-digit calibration without rollover interference.
+			\end{itemize}
+		\end{itemize}
+		\begin{figure}[H] % <--- Add [H] right here
+			\centering
+			% Add angle=-90 (or angle=90) to correct the orientation
+			\includegraphics[width=0.75\linewidth]{5Buttons.jpg}
+			\caption{A Clearer look at the buttons}
+			\label{fig:}
+		\end{figure}
+		\begin{figure}[H] % <--- Add [H] right here
+			\centering
+			% Add angle=-90 (or angle=90) to correct the orientation
+			\includegraphics[width=0.75\linewidth]{General.png}
+			\caption{A general view of the final circuit}
+			\label{fig:}
+			
+		\end{figure}
+		
+		\begin{figure}[H] % <--- Add [H] right here
+			\centering
+			% Add angle=-90 (or angle=90) to correct the orientation
+			\includegraphics[width=0.75\linewidth]{Complete.jpeg}
+			\caption{The final product}
+			\label{fig:}
+		\end{figure}
+		\newpage
+		
+		\section{Project Reflections and Learning Outcomes}
+		
+		\subsection{A Beginner's Perspective on Embedded Systems}
+		Stepping into the world of electrical engineering and microcontroller programming was an eye-opening experience for us. As beginners, bridging the gap between theoretical concepts and a physical, working device presented a steep learning curve. The transition from basic C programming to developing a comprehensive 312-line C++ script for the Arduino Uno required us to deeply understand how software directly manipulates hardware. We had to learn how to correctly utilize sleep states, configure timer interrupts, and ultimately understand exactly what our code was instructing the Arduino to do at the microsecond level.
+		
+		\subsection{Collaborative Troubleshooting and Conceptual Growth}
+		Together, our most significant growth came from collaborative troubleshooting. The sheer complexity of combining Karnaugh Maps (KMaps), state machines, and multiplexing architecture meant that bugs were inevitable. When we encountered issues, such as the clock-halting bug during edit mode, we learned to methodically isolate the problem. We broke down the functions of individual components, verifying each part's expected behavior against the actual output. This structured approach to problem-solving is a skill we will carry forward into future engineering projects.
+		
+		Furthermore, the process of documenting our journey introduced us to \LaTeX. While the initial formatting syntax, generating tables, and resolving cryptic compiler errors was a challenge of its own, we eventually gained a strong appreciation for its capabilities. Learning to automatically generate our table of contents, neatly organize our engineering logs, and properly format our hardware interfacing sections encapsulated our hard work.
+		
+		\subsection{Hardware Frustrations and Physical Challenges}
+		Despite the successes in our software logic, the physical circuit building frequently tested our patience. First and foremost was the overwhelming reality of the wiring. A multiplexed 6-digit 7-segment display system requires a staggering number of jumper wires. The sheer density of the connections made the breadboards incredibly cluttered, turning cable management into a visual nightmare. Tracing a single faulty connection through the tangled web of wires was a tedious process, and we constantly had to double-check for loose connections that would cause the displays to flicker or fail altogether. 
+		
+		Adding to the physical annoyances were the tactile components themselves. The push-buttons simply refused to sit properly on the breadboard, often popping out slightly or failing to make consistent contact with the rails. This poor physical seating heavily exacerbated mechanical switch bouncing. We were forced to spend a significant amount of time understanding and fine-tuning software debouncing techniques just to get a single, clean digital read from a seemingly simple button press.
+		
+		Lastly, the visual output presented its own unique hardware headaches. While we successfully implemented the IC 7447 and Common Anode configurations, the displays did not look perfect out of the box. Specifically, the top and bottom "tail" segments for the numbers '6' and '9' required manual software fixes. Modifying the brightness calibration for these specific segments using microsecond delays was a frustrating trial-and-error process, as fixing one digit often made the other look dull.
+		
+		\subsection{Final Thoughts and Viva Preparation}
+		As we finalize this project and prepare for our upcoming viva, we reflect on how much ground we have covered. What started as a daunting list of requirements---applying KMaps, writing 312 lines of C++, mastering debouncing, and tackling complex circuit building---has culminated in a fully functional digital clock and timer. We now possess a solid grasp on the function of each individual component and the Arduino microcontroller that orchestrates them. The annoyances of loose wires, stubborn buttons, and dull displays were ultimately overshadowed by the immense satisfaction of watching our code come to life and keeping perfect time.
+		\newpage
+		\section{Hardware Interfacing and Pin Allocation}
+		\begin{table}[H]
+			\centering
+			\caption{Complete System Pin Mapping}
+			\label{tab:pin_connections}
+			\begin{tabular}{|c|c|l|}
+				\hline
+				\textbf{Subsystem} & \textbf{Arduino Pin} & \textbf{Target Function / Description} \\ \hline
+				\multirow{4}{*}{\textbf{IC 7447 BCD Bus}} 
+				& D2 & Pin 7 ($A$ - LSB) \\ \cline{2-3}
+				& D3 & Pin 1 ($B$) \\ \cline{2-3}
+				& D4 & Pin 2 ($C$) \\ \cline{2-3}
+				& D5 & Pin 6 ($D$ - MSB) \\ \hline
+				\multirow{6}{*}{\textbf{Display Enables}} 
+				& D6 & Segment $a$ line on displays (top tail fix for $6$) \\ \cline{2-3}
+				& D7 & Segment $d$ line on displays (Bottom tail fix for $9$) \\ \cline{2-3}
+				& A0 & Display 1 (Hours Tens: $0\to2$) \\ \cline{2-3}
+				& D12 & Display 2 (Hours Units: $0\to9$ or $0\to3$) \\ \cline{2-3}
+				& D11 & Display 3 (Minutes Tens: $0\to5$) \\ \cline{2-3}
+				& D10 & Display 4 (Minutes Units: $0\to9$) \\ \cline{2-3}
+				& D9 & Display 5 (Seconds Tens: $0\to5$) \\ \cline{2-3}
+				& D8 & Display 6 (Seconds Units: $0\to9$) \\ \hline
+				\multirow{5}{*}{\textbf{Push Buttons}} 
+				& A1 & Button 1: Edit Mode Toggle (Run / Pause) \\ \cline{2-3}
+				& A2 & Button 2: Next Digit Selection ($0 \to 5$) \\ \cline{2-3}
+				& A3 & Button 3: Increment Selected Digit \\ \cline{2-3}
+				& A4 & Button 4: Decrement Selected Digit \\ \cline{2-3}
+				& A5  & Button 5: Timer Mode Toggle (Clock / Timer Mode) \\ \hline
+			\end{tabular}
+		\end{table}
+		
+		\vspace{0.5cm}
+		\subsection{Working Principle of the Common Anode Display}
+		In a Common Anode (CA) seven-segment display, the positive terminals (anodes) of all eight internal LEDs---comprising segments $a$ through $g$ and the decimal point ($DP$)---are joined internally into a single shared common node ($COM$).
+		
+		\begin{itemize}
+			\item \textbf{Active-LOW Driving Logic:} An individual segment illuminates only when its corresponding cathode pin is pulled to a logic \textbf{LOW} ($0\text{ V}$ / Ground), completing the circuit and allowing current to sink from the positive $COM$ rail through the diode. Applying a logic \textbf{HIGH} ($5\text{ V}$) turns the segment OFF.
+			
+		\end{itemize}
+		
+		\subsection{Physical 10-Pin Layout and Terminal Mapping}
+		
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=0.37\linewidth]{Anode_segments.png}
+			\hfill
+			\includegraphics[width=0.40\linewidth]{commonanode2.jpg}
+			\caption{Common Anode 7-Segment Display: (Left) Pinout Diagram, (Right) Physical 10-Pin DIP Module}
+			\label{fig:ca_display_pinout}
+		\end{figure}
+		
+		\begin{table}[H]
+			\centering
+			\caption{Physical 10-Pin Layout and Terminal Mapping}
+			\label{tab:ca_pinout_table}
+			\begin{tabular}{|c|c|c|l|}
+				\hline
+				\textbf{Pin No.} & \textbf{Physical Position} & \textbf{Terminal Identifier} & \textbf{Internal Function \& Signal State} \\ \hline
+				\textbf{Pin 1} & Bottom Row (Left) & $e$ & Segment $e$ Cathode (Active LOW) \\ \hline
+				\textbf{Pin 2} & Bottom Row & $d$ & Segment $d$ Cathode (Active LOW) \\ \hline
+				\textbf{Pin 3} & Bottom Row (Center) & COM & Common Anode (Positive Supply / Enable Line) \\ \hline
+				\textbf{Pin 4} & Bottom Row & $c$ & Segment $c$ Cathode (Active LOW)\\ \hline
+				\textbf{Pin 5} & Bottom Row (Right) & DP / Dot & Decimal Point Cathode (Active LOW) \\ \hline
+				\textbf{Pin 6} & Top Row (Right) & $b$ & Segment $b$ Cathode (Active LOW)\\ \hline
+				\textbf{Pin 7} & Top Row & $a$ & Segment $a$ Cathode (Active LOW) \\ \hline
+				\textbf{Pin 8} & Top Row (Center) & COM & Common Anode (Internally tied to Pin 3)\\ \hline
+				\textbf{Pin 9} & Top Row & $f$ & Segment $f$ Cathode (Active LOW)\\ \hline
+				\textbf{Pin 10} & Top Row (Left) & $g$ & Segment $g$ Cathode (Active LOW) \\ \hline
+			\end{tabular}
+		\end{table}
+		
+		\subsection{Hardware Implementation in the 6-Digit Clock}
+		\begin{itemize}
+			\item \textbf{Shared Segment Bus Connections:} All matching cathode segment pins ($a, b, c, d, e, f, g$) across all six displays are wired in parallel directly to the output pins ($\bar{a}$ to $\bar{g}$) of the single IC 7447 decoder via current-limiting resistors. The Arduino drives the 4-bit BCD input of the 7447 using pins \textbf{D2 ($A$), D3 ($B$), D4 ($C$), and D5 ($D$)}.
+			
+			\item \textbf{Hardware Tail Fix for Numerals 6 and 9:} Standard 7447 decoders display the numeral `6` without the top segment ($a$) and the numeral `9` without the bottom segment ($d$). To render complete digits, auxiliary Arduino pins are wired to the segment lines to manually pull the cathodes LOW when displaying these states:
+			\begin{itemize}
+				\item \textbf{Pin D6:} Connected to segment \textbf{$a$} (activates the top tail for `6`).
+				\item \textbf{Pin D7:} Connected to segment \textbf{$d$} (activates the bottom tail for `9`).
+			\end{itemize}
+		\end{itemize}
+		
+		\newpage
+		\subsection{Breadboard Architecture and Power Distribution}
+		
+		\subsubsection{Breadboard Architecture and Internal Connectivity}
+		A solderless breadboard provides the physical prototyping interface for modular circuit assembly, component interconnects, and DC power distribution without requiring permanent soldering. The internal conductive clips are arranged into two functional zones:
+		\begin{itemize}
+			\item \textbf{Central Component Region:} Arranged into 5-pin vertical columns (tie-point strips). All five sockets in a given column are electrically shorted beneath the casing. A central isolation trough divides the top and bottom sections, providing standard spacing for Dual In-line Package (DIP) ICs---such as the IC 7447---to sit across the gap without shorting opposing pins.
+			\item \textbf{Power Distribution Rails:} Continuous horizontal metal strips running along the top and bottom borders, designated for steady DC voltage rails across the prototyping setup.
+		\end{itemize}
+		
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=0.75\linewidth]{breadboard.jpg}
+			\caption{Breadboard Internal Connectivity and Terminal Strip Configuration}
+			\label{fig:breadboard_layout}
+		\end{figure}
+		
+		\subsubsection{Power Rail Configuration}
+		To maintain clean wiring and stable power delivery across the six displays, push-button pull-down networks, and decoder IC, dedicated continuous rails are assigned as follows:
+		
+		\begin{table}[H]
+			\centering
+			
+			\label{tab:breadboard_power_rails}
+			\begin{tabular}{|l|c|l|}
+				\hline
+				\textbf{Rail Position} & \textbf{Connection Destination} & \textbf{Function \& Electrical Specification} \\ \hline
+				\textbf{Outermost Rail} & Arduino $+5\text{ V}$ Pin & Positive DC Supply Bus ($V_{CC}$) for IC 7447 and display bias\\ \hline
+				\textbf{Inner Rail} & Arduino $\text{GND}$ Pin & Common System Ground ($0\text{ V}$) reference for ICs and buttons \\ \hline
+			\end{tabular}
+		\end{table}
+		\vspace{0.5cm}
+		
+		\section{Display Interface: IC 7447 and Common Anode Configuration}
+		
+		\subsection{Structure of the Common Anode 7-Segment Display}
+		A standard seven-segment display is constructed using seven individual Light Emitting Diodes (LEDs), conventionally labeled \textit{a} through \textit{g}, arranged in a figure-eight pattern. In a \textbf{Common Anode} configuration, the positive terminals (anodes) of all seven internal LEDs are internally shorted together and connected to a continuous high voltage source, typically $5\text{V}$. Because the LEDs constantly receive power at their anodes, illuminating a specific segment requires its corresponding negative terminal (cathode) to be pulled to a LOW logic state (connected to ground). This creates a voltage potential across the LED, allowing current to flow and emitting light.
+		
+		
+		\begin{figure}[H]
+			\centering
+			% The scale=0.5 parameter shrinks the image to 50% of its original resolution/size
+			\includegraphics[scale=0.5]{IC2.png}
+			\caption{IC 7447}
+			\label{fig:half_size_image}
+		\end{figure}
+		
+		
+		\begin{figure}[H] % <--- Add [H] right here
+			\centering
+			\includegraphics[width=1\linewidth]{IC.png}
+			\caption{Connections of the IC}
+			\label{fig:placeholder}
+		\end{figure}
+		
+		
+		\subsection{Operating Principle of the IC 7447 Decoder}
+		The IC 7447 is a specialized combinational logic integrated circuit designed specifically to interface between digital processing units and visual displays. The microcontroller outputs a 4-bit Binary-Coded Decimal (BCD) signal to the input pins of the IC 7447, designated as A (Least Significant Bit) through D (Most Significant Bit). Inside the IC, a complex arrangement of logic gates decodes this 4-bit binary sequence to determine precisely which segments of the display must be illuminated to form the corresponding decimal character from 0 to 9. 
+		
+		\subsection{Hardware Integration: Current Sinking and Pin Configuration}
+		The critical characteristic of the IC 7447 is its \textbf{active-LOW} output architecture. When the decoder determines that a specific segment should turn on, it drives the corresponding output pin to a LOW state (approximately $0\text{V}$). This design perfectly complements the Common Anode display through a process known as \textit{current sinking}:
+		\begin{itemize}
+			\item The display segments constantly receive $5\text{V}$ from their shared common anode.
+			\item To form a number, the IC 7447 selectively connects the required segment cathodes to ground.
+			\item Electrical current flows from the common $5\text{V}$ source, through the specific LEDs, and into the IC 7447 output pins, which safely sink the current to ground.
+			\item Segments that are not required for the specific number remain pulled HIGH by the IC, preventing current flow and keeping those LEDs dark.
+		\end{itemize}
+		
+		To facilitate this hardware integration, specific output pins on the IC 7447 are hardwired to their corresponding segments on the display. Table \ref{tab:ic7447_pins} outlines the exact pinout connections required to drive the visual output.
+		
+		\begin{table}[H]
+			\centering
+			\renewcommand{\arraystretch}{1.2}
+			\begin{tabular}{|c|c|}
+				\hline
+				\textbf{IC 7447 Pin} & \textbf{Seven Segment Display Segment} \\
+				\hline
+				13 & a \\
+				\hline
+				12 & b \\
+				\hline
+				11 & c \\
+				\hline
+				10 & d \\
+				\hline
+				9  & e \\
+				\hline
+				15 & f \\
+				\hline
+				14 & g \\
+				\hline
+			\end{tabular}
+			\caption{IC 7447 BCD to 7-Segment Output Connections}
+			\label{tab:ic7447_pins}
+		\end{table}
+		
+		
+		
+		\subsection{Role of Current-Limiting Resistors}
+		The individual segments of a seven-segment display are essentially Light Emitting Diodes (LEDs). Like all standard LEDs, they possess a specific forward voltage drop (typically around $2\text{V}$) and can safely handle only a limited amount of continuous electrical current (usually around $20\text{ mA}$). 
+		
+		In this clock's circuit configuration, the common anode of the display is supplied with a constant $5\text{V}$, and the IC 7447 decoder sinks the segment lines directly to ground ($0\text{V}$) to complete the circuit and illuminate the digit. If the segments were wired directly to the IC without any resistance, a massive influx of unrestricted current would flow through the LEDs. This sudden power surge would immediately burn out the display segments and likely cause thermal damage to the internal logic gates of the IC 7447.
+		
+		To prevent this catastrophic failure, seven $240\Omega$ resistors are placed in series between the active-LOW output pins of the IC 7447 and the corresponding segment inputs (\textit{a} through \textit{g}) of the display multiplexing bus. These resistors act as electrical bottlenecks, safely limiting the current to a stable operating level. This ensures the multiplexed digits illuminate brightly without exceeding the thermal or electrical limits of the hardware.
+		
+		\begin{figure}[H]
+			\centering
+			% The scale=0.5 parameter shrinks the image to 50% of its original resolution/size
+			\includegraphics[scale=0.2]{ohm240.jpg}
+			\caption{$240\Omega$  resistors}
+			\label{fig:half_size_image}
+		\end{figure}
+		
+		
+		\newpage
+		\section{Arduino Uno Hardware Overview}
+		The Arduino Uno serves as the central processing and control unit for the digital clock. Below is an overview of its key hardware components:
+		
+		\begin{figure}[H] % <--- Add [H] right here
+			\centering
+			\includegraphics[width=1\linewidth]{Arduino_controller.png}
+			\caption{Arduino Uno}
+			\label{fig:placeholder}
+		\end{figure}
+		
+		\subsection{Core Processing and Communication}
+		\begin{itemize}
+			\item \textbf{Atmega 328:} The primary microcontroller and main "brain" of the Arduino. It stores and executes the program, tracks timer interrupts, and controls the digital output pins that dictate display multiplexing.
+			\item \textbf{ATmega16U2:} A secondary microcontroller acting as a hardware bridge. It translates USB signals from a computer into serial data that the Atmega 328 can understand for code uploading.
+			\item \textbf{Crystal Oscillators:} Components that generate a highly stable, rhythmic electronic signal (typically 16 MHz), acting as the heartbeat for precise instruction timing and accurate second tracking.
+		\end{itemize}
+		
+		\subsection{Power Delivery and Regulation}
+		\begin{itemize}
+			\item \textbf{USB-B port:} The primary interface for connecting the board to a computer, providing a 5V power supply during development and acting as a data pathway for software uploads.
+			\item \textbf{Power (7\textasciitilde12 v):} A standard DC barrel jack used to plug in an external AC wall adapter or battery pack for standalone operation once programmed.
+			\item \textbf{Voltage Regulator:} Steps down higher external voltages (like 9V) supplied through the barrel jack to a safe, stable 5V, protecting the microcontrollers and external displays.
+			\item \textbf{Power LED:} A dedicated indicator light confirming that the board is successfully receiving electrical power.
+		\end{itemize}
+		
+		\subsection{System Control}
+		\begin{itemize}
+			\item \textbf{Reset Button:} A tactile button that physically restarts the Atmega 328 microcontroller, halting current operations and restarting the program from the beginning without unplugging power.
+		\end{itemize}
+		
+		\newpage
+		
+		\section{Combinational Counter Logic (Forward Counting)}
+		
+		Let the present state nibble be represented by the vector:
+		\begin{align}
+			\vec{X} = \myvec{Z \\ Y \\ X \\ W}
+		\end{align}
+		where $W$ is the LSB and $Z$ is the MSB. The next state $\vec{X}^+ = \myvec{D & C & B & A}^T$ is synthesized for each counter stage using K-maps with don't care conditions.
+		
+		\section{\textbf{Mod-10 Stage Derivations (4-Variable: $Z, Y, X, W$)}}
+		\vspace{1em}
+		\subsection{General State Transition Table (Mod-10)}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c|}
+				\hline
+				\textbf{Present State (Decimal)} & \textbf{Input (ZYXW)} & \textbf{Next State / Output (DCBA)} \\
+				\hline
+				0 & $0000$ & $0001$ \\
+				\hline
+				1 & $0001$ & $0010$ \\
+				\hline
+				2 & $0010$ & $0011$ \\
+				\hline
+				3 & $0011$ & $0100$ \\
+				\hline
+				4 & $0100$ & $0101$ \\
+				\hline
+				5 & $0101$ & $0110$ \\
+				\hline
+				6 & $0110$ & $0111$ \\
+				\hline
+				7 & $0111$ & $1000$ \\
+				\hline
+				8 & $1000$ & $1001$ \\
+				\hline
+				9 & $1001$ & $0000$ \\
+				\hline
+				10--15 & $1010-1111$ & $d\ d\ d\ d$ \\
+				\hline
+			\end{tabular}
+			\caption{State Transition Table for Mod-10 Counter}
+		\end{table}
+		
+		\begin{justify}
+			\textbf{Clock Application (Use Cases in Time):} \\
+			This Mod-10 (BCD) logic handles the $0 \rightarrow 9$ counting for the Units digits of the clock. It is used in three specific places:
+			\begin{itemize}
+				\item \textbf{Seconds Units:} Counts single seconds from $0 \rightarrow 9$. This stage updates every 1 second.
+				\item \textbf{Minutes Units:} Counts single minutes from $0 \rightarrow 9$. This stage updates every 60 seconds (whenever the Seconds Tens rolls over from 5 to 0).
+				\item \textbf{Hours Units (Standard):} Counts single hours from $0 \rightarrow 9$. This stage updates every 60 minutes. Note: It only acts as a Mod-10 counter between the times of 00:00 to 09:59 and 10:00 to 19:59.
+			\end{itemize}
+		\end{justify}
+		
+		\vspace{1em}
+		\subsection{Bit A Map \& Input/Output Mapping}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c||c|c|c|}
+				\hline
+				\textbf{State} & \textbf{Input (ZYXW)} & \textbf{Output (A)} & \textbf{State} & \textbf{Input (ZYXW)} & \textbf{Output (A)} \\
+				\hline
+				S0 & $0000$ & $1$ & S8 & $1000$ & $1$ \\
+				\hline
+				S1 & $0001$ & $0$ & S9 & $1001$ & $0$ \\
+				\hline
+				S2 & $0010$ & $1$ & S10 & $1010$ & $d$ \\
+				\hline
+				S3 & $0011$ & $0$ & S11 & $1011$ & $d$ \\
+				\hline
+				S4 & $0100$ & $1$ & S12 & $1100$ & $d$ \\
+				\hline
+				S5 & $0101$ & $0$ & S13 & $1101$ & $d$ \\
+				\hline
+				S6 & $0110$ & $1$ & S14 & $1110$ & $d$ \\
+				\hline
+				S7 & $0111$ & $0$ & S15 & $1111$ & $d$ \\
+				\hline
+			\end{tabular}
+			\caption{Truth Table for Bit A (Mod-10)}
+		\end{table}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|}
+				\hline
+				\textbf{ZY\textbackslash XW} & \textbf{00} & \textbf{01} & \textbf{11} & \textbf{10} \\
+				\hline
+				\textbf{00} & \cellcolor{grpRed}$1$ (S0) & $0$ (S1) & $0$ (S3) & \cellcolor{grpRed}$1$ (S2) \\
+				\hline
+				\textbf{01} & \cellcolor{grpRed}$1$ (S4) & $0$ (S5) & $0$ (S7) & \cellcolor{grpRed}$1$ (S6) \\
+				\hline
+				\textbf{11} & \cellcolor{grpRed}$d$ (S12) & $d$ (S13) & $d$ (S15) & \cellcolor{grpRed}$d$ (S14) \\
+				\hline
+				\textbf{10} & \cellcolor{grpRed}$1$ (S8) & $0$ (S9) & \cellcolor{grpRed}$d$ (S11) & \cellcolor{grpRed}$d$ (S10) \\
+				\hline
+			\end{tabular}
+			\captionof{figure}{K-Map Grouping and Equation for Output Bit A (Mod-10)}
+		\end{table}
+		
+		\begin{justify}
+			\textbf{Group Description:} Groups the entire $00$ column and $10$ column together into one massive 8-cell block. The only variable that remains constant across all these cells is $W=0$.
+			
+			\textbf{Final Derivation:}
+			\begin{align}
+				A &= W'
+			\end{align}
+		\end{justify}
+		
+		\vspace{1em}
+		\subsection{Bit B Map \& Input/Output Mapping}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c||c|c|c|}
+				\hline
+				\textbf{State} & \textbf{Input (ZYXW)} & \textbf{Output (B)} & \textbf{State} & \textbf{Input (ZYXW)} & \textbf{Output (B)} \\
+				\hline
+				S0 & $0000$ & $0$ & S8 & $1000$ & $0$ \\
+				\hline
+				S1 & $0001$ & $1$ & S9 & $1001$ & $0$ \\
+				\hline
+				S2 & $0010$ & $1$ & S10 & $1010$ & $d$ \\
+				\hline
+				S3 & $0011$ & $0$ & S11 & $1011$ & $d$ \\
+				\hline
+				S4 & $0100$ & $0$ & S12 & $1100$ & $d$ \\
+				\hline
+				S5 & $0101$ & $1$ & S13 & $1101$ & $d$ \\
+				\hline
+				S6 & $0110$ & $1$ & S14 & $1110$ & $d$ \\
+				\hline
+				S7 & $0111$ & $0$ & S15 & $1111$ & $d$ \\
+				\hline
+			\end{tabular}
+			\caption{Truth Table for Bit B (Mod-10)}
+		\end{table}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|}
+				\hline
+				\textbf{ZY\textbackslash XW} & \textbf{00} & \textbf{01} & \textbf{11} & \textbf{10} \\
+				\hline
+				\textbf{00} & $0$ (S0) & \cellcolor{grpRed}$1$ (S1) & $0$ (S3) & \cellcolor{grpGreen}$1$ (S2) \\
+				\hline
+				\textbf{01} & $0$ (S4) & \cellcolor{grpRed}$1$ (S5) & $0$ (S7) & \cellcolor{grpGreen}$1$ (S6) \\
+				\hline
+				\textbf{11} & $d$ (S12) & $d$ (S13) & $d$ (S15) & \cellcolor{grpGreen}$d$ (S14) \\
+				\hline
+				\textbf{10} & $0$ (S8) & $0$ (S9) & $d$ (S11) & \cellcolor{grpGreen}$d$ (S10) \\
+				\hline
+			\end{tabular}
+			\captionof{figure}{K-Map Grouping and Equation for Output Bit B (Mod-10)}
+		\end{table}
+		
+		\begin{justify}
+			\textbf{Group Description:} 
+			\begin{itemize}
+				\item \textbf{Group 1 (Cells S1, S5):} Groups vertically. Constant variables are $Z=0$, $X=0$, and $W=1$ (Term: $WX'Z'$).
+				\item \textbf{Group 2 (Cells S2, S6, S14, S10):} Groups the entire $10$ column. Constant variables are $X=1$ and $W=0$ (Term: $W'X$).
+			\end{itemize}
+			
+			\textbf{Final Derivation:}
+			\begin{align}
+				B &= WX'Z' + W'X
+			\end{align}
+		\end{justify}
+		
+		\vspace{1em}
+		\subsection{Bit C Map \& Input/Output Mapping}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c||c|c|c|}
+				\hline
+				\textbf{State} & \textbf{Input (ZYXW)} & \textbf{Output (C)} & \textbf{State} & \textbf{Input (ZYXW)} & \textbf{Output (C)} \\
+				\hline
+				S0 & $0000$ & $0$ & S8 & $1000$ & $0$ \\
+				\hline
+				S1 & $0001$ & $0$ & S9 & $1001$ & $0$ \\
+				\hline
+				S2 & $0010$ & $0$ & S10 & $1010$ & $d$ \\
+				\hline
+				S3 & $0011$ & $1$ & S11 & $1011$ & $d$ \\
+				\hline
+				S4 & $0100$ & $1$ & S12 & $1100$ & $d$ \\
+				\hline
+				S5 & $0101$ & $1$ & S13 & $1101$ & $d$ \\
+				\hline
+				S6 & $0110$ & $1$ & S14 & $1110$ & $d$ \\
+				\hline
+				S7 & $0111$ & $0$ & S15 & $1111$ & $d$ \\
+				\hline
+			\end{tabular}
+			\caption{Truth Table for Bit C (Mod-10)}
+		\end{table}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|}
+				\hline
+				\textbf{ZY\textbackslash XW} & \textbf{00} & \textbf{01} & \textbf{11} & \textbf{10} \\
+				\hline
+				\textbf{00} & $0$ (S0) & $0$ (S1) & \cellcolor{grpGreen}$1$ (S3) & $0$ (S2) \\
+				\hline
+				\textbf{01} & \cellcolor{grpYellow}$1$ (S4) & \cellcolor{grpRed}$1$ (S5) & $0$ (S7) & \cellcolor{grpYellow}$1$ (S6) \\
+				\hline
+				\textbf{11} & \cellcolor{grpYellow}$d$ (S12) & \cellcolor{grpRed}$d$ (S13) & $d$ (S15) & \cellcolor{grpYellow}$d$ (S14) \\
+				\hline
+				\textbf{10} & $0$ (S8) & $0$ (S9) & $d$ (S11) & $d$ (S10) \\
+				\hline
+			\end{tabular}
+			\captionof{figure}{K-Map Grouping and Equation for Output Bit C (Mod-10)}
+		\end{table}
+		
+		\begin{justify}
+			\textbf{Group Description:}
+			\begin{itemize}
+				\item \textbf{Group 1 (Cells S4, S5, S12, S13):} A $2 \times 2$ square. Constants are $Y=1$ and $X=0$ (Term: $X'Y$).
+				\item \textbf{Group 2 (Cells S4, S6, S12, S14):} Groups the outer edges of the middle two rows. Constants are $Y=1$ and $W=0$ (Term: $W'Y$).
+				\item \textbf{Group 3 (Cells S3, S11):} Wraps top-to-bottom in the $11$ column. Constants are $Y=0$, $X=1$, and $W=1$ (Term: $WXY'$).
+			\end{itemize}
+			
+			\textbf{Final Derivation:}
+			\begin{align}
+				C &= X'Y + W'Y + WXY'
+			\end{align}
+		\end{justify}
+		
+		\vspace{1em}
+		\subsection{Bit D Map \& Input/Output Mapping}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c||c|c|c|}
+				\hline
+				\textbf{State} & \textbf{Input (ZYXW)} & \textbf{Output (D)} & \textbf{State} & \textbf{Input (ZYXW)} & \textbf{Output (D)} \\
+				\hline
+				S0 & $0000$ & $0$ & S8 & $1000$ & $1$ \\
+				\hline
+				S1 & $0001$ & $0$ & S9 & $1001$ & $0$ \\
+				\hline
+				S2 & $0010$ & $0$ & S10 & $1010$ & $d$ \\
+				\hline
+				S3 & $0011$ & $0$ & S11 & $1011$ & $d$ \\
+				\hline
+				S4 & $0100$ & $0$ & S12 & $1100$ & $d$ \\
+				\hline
+				S5 & $0101$ & $0$ & S13 & $1101$ & $d$ \\
+				\hline
+				S6 & $0110$ & $0$ & S14 & $1110$ & $d$ \\
+				\hline
+				S7 & $0111$ & $1$ & S15 & $1111$ & $d$ \\
+				\hline
+			\end{tabular}
+			\caption{Truth Table for Bit D (Mod-10)}
+		\end{table}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|}
+				\hline
+				\textbf{ZY\textbackslash XW} & \textbf{00} & \textbf{01} & \textbf{11} & \textbf{10} \\
+				\hline
+				\textbf{00} & $0$ (S0) & $0$ (S1) & $0$ (S3) & $0$ (S2) \\
+				\hline
+				\textbf{01} & $0$ (S4) & $0$ (S5) & \cellcolor{grpRed}$1$ (S7) & $0$ (S6) \\
+				\hline
+				\textbf{11} & \cellcolor{grpGreen}$d$ (S12) & $d$ (S13) & \cellcolor{grpRed}$d$ (S15) & \cellcolor{grpGreen}$d$ (S14) \\
+				\hline
+				\textbf{10} & \cellcolor{grpGreen}$1$ (S8) & $0$ (S9) & $d$ (S11) & \cellcolor{grpGreen}$d$ (S10) \\
+				\hline
+			\end{tabular}
+			\captionof{figure}{K-Map Grouping and Equation for Output Bit D (Mod-10)}
+		\end{table}
+		
+		\begin{justify}
+			\textbf{Group Description:}
+			\begin{itemize}
+				\item \textbf{Group 1 (Cells S7, S15):} Groups vertically. Constants are $Y=1, X=1, W=1$ (Term: $WXY$).
+				\item \textbf{Group 2 (Cells S8, S10, S12, S14):} Wraps the edges of the bottom two rows. Constants are $Z=1$ and $W=0$ (Term: $W'Z$).
+			\end{itemize}
+			
+			\textbf{Final Derivation:}
+			\begin{align}
+				D &= W'Z + WXY
+			\end{align}
+		\end{justify}
+		
+		\newpage
+		\section{\textbf{ Mod-6 Stage Derivations (3-Variable: $Y, X, W$)}}
+		\vspace{1em}
+		\subsection{General State Transition Table (Mod-6)}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c|}
+				\hline
+				\textbf{Present State (Decimal)} & \textbf{Input (YXW)} & \textbf{Next State / Output (CBA)} \\
+				\hline
+				0 & $000$ & $001$ \\
+				\hline
+				1 & $001$ & $010$ \\
+				\hline
+				2 & $010$ & $011$ \\
+				\hline
+				3 & $011$ & $100$ \\
+				\hline
+				4 & $100$ & $101$ \\
+				\hline
+				5 & $101$ & $000$ \\
+				\hline
+				6--7 & $110-111$ & $d\ d\ d$ \\
+				\hline
+			\end{tabular}
+			\caption{State Transition Table for Mod-6 Counter}
+		\end{table}
+		
+		\begin{justify}
+			\textbf{Clock Application (Use Cases in Time):} \\
+			This Mod-6 logic handles the $0 \rightarrow 5$ counting for the Tens digits, ensuring time resets at 59 instead of 99. It is used in two places:
+			\begin{itemize}
+				\item \textbf{Seconds Tens:} Counts $0 \rightarrow 5$ (representing $00$ to $50$ seconds). Updates every 10 seconds.
+				\item \textbf{Minutes Tens:} Counts $0 \rightarrow 5$ (representing $00$ to $50$ minutes). Updates every 10 minutes.
+			\end{itemize}
+		\end{justify}
+		
+		\vspace{1em}
+		\subsection{Bit A Map \& Input/Output Mapping}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c||c|c|c|}
+				\hline
+				\textbf{State} & \textbf{Input (YXW)} & \textbf{Output (A)} & \textbf{State} & \textbf{Input (YXW)} & \textbf{Output (A)} \\
+				\hline
+				S0 & $000$ & $1$ & S4 & $100$ & $1$ \\
+				\hline
+				S1 & $001$ & $0$ & S5 & $101$ & $0$ \\
+				\hline
+				S2 & $010$ & $1$ & S6 & $110$ & $d$ \\
+				\hline
+				S3 & $011$ & $0$ & S7 & $111$ & $d$ \\
+				\hline
+			\end{tabular}
+			\caption{Truth Table for Bit A (Mod-6)}
+		\end{table}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|}
+				\hline
+				\textbf{Y\textbackslash XW} & \textbf{00} & \textbf{01} & \textbf{11} & \textbf{10} \\
+				\hline
+				\textbf{0} & \cellcolor{grpRed}$1$ (S0) & $0$ (S1) & $0$ (S3) & \cellcolor{grpRed}$1$ (S2) \\
+				\hline
+				\textbf{1} & \cellcolor{grpRed}$1$ (S4) & $0$ (S5) & \cellcolor{grpRed}$d$ (S7) & \cellcolor{grpRed}$d$ (S6) \\
+				\hline
+			\end{tabular}
+			\captionof{figure}{K-Map Grouping and Equation for Output Bit A (Mod-6)}
+		\end{table}
+		
+		\begin{justify}
+			\textbf{Group Description:} Groups the $00$ column and $10$ column together. The only constant variable is $W=0$.
+			
+			\textbf{Final Derivation:}
+			\begin{align}
+				A &= W'
+			\end{align}
+		\end{justify}
+		
+		\vspace{1em}
+		\subsection{Bit B Map \& Input/Output Mapping}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c||c|c|c|}
+				\hline
+				\textbf{State} & \textbf{Input (YXW)} & \textbf{Output (B)} & \textbf{State} & \textbf{Input (YXW)} & \textbf{Output (B)} \\
+				\hline
+				S0 & $000$ & $0$ & S4 & $100$ & $0$ \\
+				\hline
+				S1 & $001$ & $1$ & S5 & $101$ & $0$ \\
+				\hline
+				S2 & $010$ & $1$ & S6 & $110$ & $d$ \\
+				\hline
+				S3 & $011$ & $0$ & S7 & $111$ & $d$ \\
+				\hline
+			\end{tabular}
+			\caption{Truth Table for Bit B (Mod-6)}
+		\end{table}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|}
+				\hline
+				\textbf{Y\textbackslash XW} & \textbf{00} & \textbf{01} & \textbf{11} & \textbf{10} \\
+				\hline
+				\textbf{0} & $0$ (S0) & \cellcolor{grpRed}$1$ (S1) & $0$ (S3) & \cellcolor{grpGreen}$1$ (S2) \\
+				\hline
+				\textbf{1} & $0$ (S4) & $0$ (S5) & \cellcolor{grpGreen}$d$ (S7) & \cellcolor{grpGreen}$d$ (S6) \\
+				\hline
+			\end{tabular}
+			\captionof{figure}{K-Map Grouping and Equation for Output Bit B (Mod-6)}
+		\end{table}
+		
+		\begin{justify}
+			\textbf{Group Description:}
+			\begin{itemize}
+				\item \textbf{Group 1 (Cell S1):} Isolated logic choice to avoid overlapping unneeded variables. Constants are $Y=0, X=0, W=1$ (Term: $WX'Y'$).
+				\item \textbf{Group 2 (Cells S2, S6):} Groups vertically in the $10$ column. Constants are $X=1, W=0$ (Term: $W'X$).
+			\end{itemize}
+			
+			\textbf{Final Derivation:}
+			\begin{align}
+				B &= WX'Y' + W'X
+			\end{align}
+		\end{justify}
+		
+		\vspace{1em}
+		\subsection{Bit C Map \& Input/Output Mapping}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c||c|c|c|}
+				\hline
+				\textbf{State} & \textbf{Input (YXW)} & \textbf{Output (C)} & \textbf{State} & \textbf{Input (YXW)} & \textbf{Output (C)} \\
+				\hline
+				S0 & $000$ & $0$ & S4 & $100$ & $1$ \\
+				\hline
+				S1 & $001$ & $0$ & S5 & $101$ & $0$ \\
+				\hline
+				S2 & $010$ & $0$ & S6 & $110$ & $d$ \\
+				\hline
+				S3 & $011$ & $1$ & S7 & $111$ & $d$ \\
+				\hline
+			\end{tabular}
+			\caption{Truth Table for Bit C (Mod-6)}
+		\end{table}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|}
+				\hline
+				\textbf{Y\textbackslash XW} & \textbf{00} & \textbf{01} & \textbf{11} & \textbf{10} \\
+				\hline
+				\textbf{0} & $0$ (S0) & $0$ (S1) & \cellcolor{grpGreen}$1$ (S3) & $0$ (S2) \\
+				\hline
+				\textbf{1} & \cellcolor{grpRed}$1$ (S4) & $0$ (S5) & \cellcolor{grpGreen}$d$ (S7) & \cellcolor{grpGreen}$d$ (S6) \\
+				\hline
+			\end{tabular}
+			\captionof{figure}{K-Map Grouping and Equation for Output Bit C (Mod-6)}
+		\end{table}
+		
+		\begin{justify}
+			\textbf{Group Description:}
+			\begin{itemize}
+				\item \textbf{Group 1 (Cells S3, S7):} Groups vertically in the $11$ column. Constants are $X=1, W=1$ (Term: $WX$).
+				\item \textbf{Group 2 (Cell S4):} Left isolated. Constants are $Y=1, X=0, W=0$ (Term: $W'X'Y$).
+			\end{itemize}
+			
+			\textbf{Final Derivation:}
+			\begin{align}
+				C &= WX + W'X'Y
+			\end{align}
+		\end{justify}
+		
+		\newpage
+		\section{\textbf{ Mod-4 \& Mod-3 Stage Derivations (2-Variable: $X, W$)}}
+		\begin{justify}
+			Because these are smaller cycles, they are represented via 2-variable matrices where rows represent $X$ and columns represent $W$.
+		\end{justify}
+		
+		\vspace{1em}
+		\subsection{1. Mod-4 Stage (Hours Units, Active when Tens = 2)}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c|}
+				\hline
+				\textbf{Present State (Decimal)} & \textbf{Input (XW)} & \textbf{Next State / Output (BA)} \\
+				\hline
+				0 & $00$ & $01$ \\
+				\hline
+				1 & $01$ & $10$ \\
+				\hline
+				2 & $10$ & $11$ \\
+				\hline
+				3 & $11$ & $00$ \\
+				\hline
+			\end{tabular}
+			\caption{State Transition Table for Mod-4 Counter}
+		\end{table}
+		
+		\begin{justify}
+			\textbf{Clock Application (Use Cases in Time):} This is highly specific to a 24-hour clock. It controls the Hours Units digit only when the Hours Tens digit is a '2', counting from $0 \rightarrow 3$ to allow the time to run from 20:00 to 23:00 before forcing a reset to 00:00.
+		\end{justify}
+		
+		\vspace{1em}
+		\subsubsection{Bit A Map \& Input/Output Mapping}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c|}
+				\hline
+				\textbf{State} & \textbf{Input (XW)} & \textbf{Output (A)} \\
+				\hline
+				S0 & $00$ & $1$ \\
+				\hline
+				S1 & $01$ & $0$ \\
+				\hline
+				S2 & $10$ & $1$ \\
+				\hline
+				S3 & $11$ & $0$ \\
+				\hline
+			\end{tabular}
+			\caption{Truth Table for Bit A (Mod-4)}
+		\end{table}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c|}
+				\hline
+				\textbf{X\textbackslash W} & \textbf{0} & \textbf{1} \\
+				\hline
+				\textbf{0} & \cellcolor{grpRed}$1$ (S0) & $0$ (S1) \\
+				\hline
+				\textbf{1} & \cellcolor{grpRed}$1$ (S2) & $0$ (S3) \\
+				\hline
+			\end{tabular}
+			\captionof{figure}{K-Map Grouping and Equation for Output Bit A (Mod-4)}
+		\end{table}
+		
+		\begin{justify}
+			\textbf{Group Description:} Groups the entire $W=0$ column. Constant: $W=0$.
+			
+			\textbf{Final Derivation:}
+			\begin{align}
+				A &= W'
+			\end{align}
+		\end{justify}
+		
+		\vspace{1em}
+		\subsubsection{Bit B Map \& Input/Output Mapping}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c|}
+				\hline
+				\textbf{State} & \textbf{Input (XW)} & \textbf{Output (B)} \\
+				\hline
+				S0 & $00$ & $0$ \\
+				\hline
+				S1 & $01$ & $1$ \\
+				\hline
+				S2 & $10$ & $1$ \\
+				\hline
+				S3 & $11$ & $0$ \\
+				\hline
+			\end{tabular}
+			\caption{Truth Table for Bit B (Mod-4)}
+		\end{table}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c|}
+				\hline
+				\textbf{X\textbackslash W} & \textbf{0} & \textbf{1} \\
+				\hline
+				\textbf{0} & $0$ (S0) & \cellcolor{grpRed}$1$ (S1) \\
+				\hline
+				\textbf{1} & \cellcolor{grpGreen}$1$ (S2) & $0$ (S3) \\
+				\hline
+			\end{tabular}
+			\captionof{figure}{K-Map Grouping and Equation for Output Bit B (Mod-4)}
+		\end{table}
+		
+		\begin{justify}
+			\textbf{Group Description:}
+			\begin{itemize}
+				\item \textbf{Group 1 (Cell S1):} Diagonal cells cannot group. Constant: $X=0, W=1$ (Term: $WX'$).
+				\item \textbf{Group 2 (Cell S2):} Constant: $X=1, W=0$ (Term: $W'X$).
+			\end{itemize}
+			
+			\textbf{Final Derivation:}
+			\begin{align}
+				B &= WX' + W'X
+			\end{align}
+		\end{justify}
+		
+		\vspace{1em}
+		\subsection{2. Mod-3 Stage (Hours Tens Counter)}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c|}
+				\hline
+				\textbf{Present State (Decimal)} & \textbf{Input (XW)} & \textbf{Next State / Output (BA)} \\
+				\hline
+				0 & $00$ & $01$ \\
+				\hline
+				1 & $01$ & $10$ \\
+				\hline
+				2 & $10$ & $00$ \\
+				\hline
+				3 & $11$ & $d\ d$ \\
+				\hline
+			\end{tabular}
+			\caption{State Transition Table for Mod-3 Counter}
+		\end{table}
+		
+		\begin{justify}
+			\textbf{Clock Application (Use Cases in Time):} This logic is solely for the Hours Tens digit, counting $0 \rightarrow 1 \rightarrow 2$ (representing ranges 00:xx, 10:xx, and 20:xx). It updates every 10 hours, resetting from 2 back to 0 upon rolling over from 23:59 to 00:00.
+		\end{justify}
+		
+		\vspace{1em}
+		\subsubsection{Bit A Map \& Input/Output Mapping}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c|}
+				\hline
+				\textbf{State} & \textbf{Input (XW)} & \textbf{Output (A)} \\
+				\hline
+				S0 & $00$ & $1$ \\
+				\hline
+				S1 & $01$ & $0$ \\
+				\hline
+				S2 & $10$ & $0$ \\
+				\hline
+				S3 & $11$ & $d$ \\
+				\hline
+			\end{tabular}
+			\caption{Truth Table for Bit A (Mod-3)}
+		\end{table}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c|}
+				\hline
+				\textbf{X\textbackslash W} & \textbf{0} & \textbf{1} \\
+				\hline
+				\textbf{0} & \cellcolor{grpRed}$1$ (S0) & $0$ (S1) \\
+				\hline
+				\textbf{1} & $0$ (S2) & \cellcolor{grpRed}$d$ (S3) \\
+				\hline
+			\end{tabular}
+			\captionof{figure}{K-Map Grouping and Equation for Output Bit A (Mod-3)}
+		\end{table}
+		
+		\begin{justify}
+			\textbf{Group Description:} Grouping cell S0 (and utilizing the don't care S3 if applicable). Constant: $X=0, W=0$.
+			
+			\textbf{Final Derivation:}
+			\begin{align}
+				A &= W'X'
+			\end{align}
+		\end{justify}
+		
+		\vspace{1em}
+		\subsubsection{Bit B Map \& Input/Output Mapping}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c|}
+				\hline
+				\textbf{State} & \textbf{Input (XW)} & \textbf{Output (B)} \\
+				\hline
+				S0 & $00$ & $0$ \\
+				\hline
+				S1 & $01$ & $1$ \\
+				\hline
+				S2 & $10$ & $0$ \\
+				\hline
+				S3 & $11$ & $d$ \\
+				\hline
+			\end{tabular}
+			\caption{Truth Table for Bit B (Mod-3)}
+		\end{table}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c|}
+				\hline
+				\textbf{X\textbackslash W} & \textbf{0} & \textbf{1} \\
+				\hline
+				\textbf{0} & $0$ (S0) & \cellcolor{grpRed}$1$ (S1) \\
+				\hline
+				\textbf{1} & $0$ (S2) & \cellcolor{grpRed}$d$ (S3) \\
+				\hline
+			\end{tabular}
+			\captionof{figure}{K-Map Grouping and Equation for Output Bit B (Mod-3)}
+		\end{table}
+		
+		\begin{justify}
+			\textbf{Group Description:} Isolated selection for Cell S1. Constant: $X=0, W=1$.
+			
+			\textbf{Final Derivation:}
+			\begin{align}
+				B &= WX'
+			\end{align}
+		\end{justify}
+		
+		\newpage
+		
+		\section{\textbf{Reverse Decrement Logic for Calibration}}
+		\begin{justify}
+			During digit calibration in PAUSE mode, Button 4 triggers reverse decrement transitions (counting downwards). Below is an illustrative state transition example for the Mod-10 decrementer stage, followed by its detailed K-map derivations and a summary table of minimized Boolean expressions for all decrementer stages.
+		\end{justify}
+		\vspace{1em}
+		
+		\subsection{Example Use Case: Mod-10 Decrementer ($9 \rightarrow 0$)}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c|}
+				\hline
+				\textbf{Present State (Decimal)} & \textbf{Input (ZYXW)} & \textbf{Next State / Output (DCBA)} \\
+				\hline
+				0 & $0000$ & $1001$ \\
+				\hline
+				1 & $0001$ & $0000$ \\
+				\hline
+				2 & $0010$ & $0001$ \\
+				\hline
+				3 & $0011$ & $0010$ \\
+				\hline
+				4 & $0100$ & $0011$ \\
+				\hline
+				5 & $0101$ & $0100$ \\
+				\hline
+				6 & $0110$ & $0101$ \\
+				\hline
+				7 & $0111$ & $0110$ \\
+				\hline
+				8 & $1000$ & $0111$ \\
+				\hline
+				9 & $1001$ & $1000$ \\
+				\hline
+				10--15 & $1010-1111$ & $d\ d\ d\ d$ \\
+				\hline
+			\end{tabular}
+			\caption{State Transition Table for Mod-10 Decrementer}
+		\end{table}
+		
+		\vspace{1em}
+		\subsection{K-Map Derivations for Mod-10 Decrementer ($9 \rightarrow 0$)}
+		
+		\subsubsection{Bit A Map \& Input/Output Mapping}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c||c|c|c|}
+				\hline
+				\textbf{State} & \textbf{Input (ZYXW)} & \textbf{Output (A)} & \textbf{State} & \textbf{Input (ZYXW)} & \textbf{Output (A)} \\
+				\hline
+				S0 & $0000$ & $1$ & S8 & $1000$ & $1$ \\
+				\hline
+				S1 & $0001$ & $0$ & S9 & $1001$ & $0$ \\
+				\hline
+				S2 & $0010$ & $1$ & S10 & $1010$ & $d$ \\
+				\hline
+				S3 & $0011$ & $0$ & S11 & $1011$ & $d$ \\
+				\hline
+				S4 & $0100$ & $1$ & S12 & $1100$ & $d$ \\
+				\hline
+				S5 & $0101$ & $0$ & S13 & $1101$ & $d$ \\
+				\hline
+				S6 & $0110$ & $1$ & S14 & $1110$ & $d$ \\
+				\hline
+				S7 & $0111$ & $0$ & S15 & $1111$ & $d$ \\
+				\hline
+			\end{tabular}
+			\caption{Truth Table for Bit A (Mod-10 Decrementer)}
+		\end{table}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|}
+				\hline
+				\textbf{ZY\textbackslash XW} & \textbf{00} & \textbf{01} & \textbf{11} & \textbf{10} \\
+				\hline
+				\textbf{00} & \cellcolor{grpRed}$1$ (S0) & $0$ (S1) & $0$ (S3) & \cellcolor{grpRed}$1$ (S2) \\
+				\hline
+				\textbf{01} & \cellcolor{grpRed}$1$ (S4) & $0$ (S5) & $0$ (S7) & \cellcolor{grpRed}$1$ (S6) \\
+				\hline
+				\textbf{11} & \cellcolor{grpRed}$d$ (S12) & $d$ (S13) & $d$ (S15) & \cellcolor{grpRed}$d$ (S14) \\
+				\hline
+				\textbf{10} & \cellcolor{grpRed}$1$ (S8) & $0$ (S9) & \cellcolor{grpRed}$d$ (S11) & \cellcolor{grpRed}$d$ (S10) \\
+				\hline
+			\end{tabular}
+			\captionof{figure}{K-Map Grouping and Equation for Output Bit A (Mod-10 Decrementer)}
+		\end{table}
+		
+		\begin{justify}
+			\textbf{Group Description:} Groups the entire $W=0$ column ($00$ and $10$ columns combined with don't cares). Constant variable is $W=0$.
+			
+			\textbf{Final Derivation:}
+			\begin{align}
+				A &= W'
+			\end{align}
+		\end{justify}
+		
+		\vspace{1em}
+		\subsubsection{Bit B Map \& Input/Output Mapping}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c||c|c|c|}
+				\hline
+				\textbf{State} & \textbf{Input (ZYXW)} & \textbf{Output (B)} & \textbf{State} & \textbf{Input (ZYXW)} & \textbf{Output (B)} \\
+				\hline
+				S0 & $0000$ & $0$ & S8 & $1000$ & $1$ \\
+				\hline
+				S1 & $0001$ & $0$ & S9 & $1001$ & $0$ \\
+				\hline
+				S2 & $0010$ & $0$ & S10 & $1010$ & $d$ \\
+				\hline
+				S3 & $0011$ & $1$ & S11 & $1011$ & $d$ \\
+				\hline
+				S4 & $0100$ & $1$ & S12 & $1100$ & $d$ \\
+				\hline
+				S5 & $0101$ & $0$ & S13 & $1101$ & $d$ \\
+				\hline
+				S6 & $0110$ & $0$ & S14 & $1110$ & $d$ \\
+				\hline
+				S7 & $0111$ & $1$ & S15 & $1111$ & $d$ \\
+				\hline
+			\end{tabular}
+			\caption{Truth Table for Bit B (Mod-10 Decrementer)}
+		\end{table}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|}
+				\hline
+				\textbf{ZY\textbackslash XW} & \textbf{00} & \textbf{01} & \textbf{11} & \textbf{10} \\
+				\hline
+				\textbf{00} & $0$ (S0) & $0$ (S1) & \cellcolor{grpRed}$1$ (S3) & $0$ (S2) \\
+				\hline
+				\textbf{01} & \cellcolor{grpGreen}$1$ (S4) & $0$ (S5) & \cellcolor{grpRed}$1$ (S7) & $0$ (S6) \\
+				\hline
+				\textbf{11} & \cellcolor{grpGreen}$d$ (S12) & $d$ (S13) & \cellcolor{grpRed}$d$ (S15) & \cellcolor{grpRed}$d$ (S14) \\
+				\hline
+				\textbf{10} & \cellcolor{grpGreen}$1$ (S8) & $0$ (S9) & \cellcolor{grpRed}$d$ (S11) & $d$ (S10) \\
+				\hline
+			\end{tabular}
+			\captionof{figure}{K-Map Grouping and Equation for Output Bit B (Mod-10 Decrementer)}
+		\end{table}
+		
+		\begin{justify}
+			\textbf{Group Description:}
+			\begin{itemize}
+				\item \textbf{Group 1:} Combines cells S4, S8, S12 ($X'W'Y$ and $ZX'W'$ combinations).
+				\item \textbf{Group 2:} Combines cells S3, S7, S11, S15 to extract optimized product terms.
+			\end{itemize}
+			
+			\textbf{Final Derivation:}
+			\begin{align}
+				B &= X'W'(Z'Y + ZY') + Z'WX
+			\end{align}
+		\end{justify}
+		
+		\vspace{1em}
+		\subsubsection{Bit C Map \& Input/Output Mapping}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c||c|c|c|}
+				\hline
+				\textbf{State} & \textbf{Input (ZYXW)} & \textbf{Output (C)} & \textbf{State} & \textbf{Input (ZYXW)} & \textbf{Output (C)} \\
+				\hline
+				S0 & $0000$ & $0$ & S8 & $1000$ & $1$ \\
+				\hline
+				S1 & $0001$ & $0$ & S9 & $1001$ & $0$ \\
+				\hline
+				S2 & $0010$ & $0$ & S10 & $1010$ & $d$ \\
+				\hline
+				S3 & $0011$ & $0$ & S11 & $1011$ & $d$ \\
+				\hline
+				S4 & $0100$ & $0$ & S12 & $1100$ & $d$ \\
+				\hline
+				S5 & $0101$ & $1$ & S13 & $1101$ & $d$ \\
+				\hline
+				S6 & $0110$ & $1$ & S14 & $1110$ & $d$ \\
+				\hline
+				S7 & $0111$ & $1$ & S15 & $1111$ & $d$ \\
+				\hline
+			\end{tabular}
+			\caption{Truth Table for Bit C (Mod-10 Decrementer)}
+		\end{table}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|}
+				\hline
+				\textbf{ZY\textbackslash XW} & \textbf{00} & \textbf{01} & \textbf{11} & \textbf{10} \\
+				\hline
+				\textbf{00} & $0$ (S0) & $0$ (S1) & $0$ (S3) & $0$ (S2) \\
+				\hline
+				\textbf{01} & $0$ (S4) & \cellcolor{grpRed}$1$ (S5) & \cellcolor{grpRed}$1$ (S7) & \cellcolor{grpRed}$1$ (S6) \\
+				\hline
+				\textbf{11} & \cellcolor{grpRed}$d$ (S12) & \cellcolor{grpRed}$d$ (S13) & \cellcolor{grpRed}$d$ (S15) & \cellcolor{grpRed}$d$ (S14) \\
+				\hline
+				\textbf{10} & \cellcolor{grpGreen}$1$ (S8) & $0$ (S9) & $d$ (S11) & $d$ (S10) \\
+				\hline
+			\end{tabular}
+			\captionof{figure}{K-Map Grouping and Equation for Output Bit C (Mod-10 Decrementer)}
+		\end{table}
+		
+		\begin{justify}
+			\textbf{Group Description:} Groups middle-row elements and vertical boundary conditions with don't-cares.
+			
+			\textbf{Final Derivation:}
+			\begin{align}
+				C &= Z'Y(X + W) + ZX'W'Y'
+			\end{align}
+		\end{justify}
+		
+		\vspace{1em}
+		\subsubsection{Bit D Map \& Input/Output Mapping}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c||c|c|c|}
+				\hline
+				\textbf{State} & \textbf{Input (ZYXW)} & \textbf{Output (D)} & \textbf{State} & \textbf{Input (ZYXW)} & \textbf{Output (D)} \\
+				\hline
+				S0 & $0000$ & $1$ & S8 & $1000$ & $0$ \\
+				\hline
+				S1 & $0001$ & $0$ & S9 & $1001$ & $1$ \\
+				\hline
+				S2 & $0010$ & $0$ & S10 & $1010$ & $d$ \\
+				\hline
+				S3 & $0011$ & $0$ & S11 & $1011$ & $d$ \\
+				\hline
+				S4 & $0100$ & $0$ & S12 & $1100$ & $d$ \\
+				\hline
+				S5 & $0101$ & $0$ & S13 & $1101$ & $d$ \\
+				\hline
+				S6 & $0110$ & $0$ & S14 & $1110$ & $d$ \\
+				\hline
+				S7 & $0111$ & $0$ & S15 & $1111$ & $d$ \\
+				\hline
+			\end{tabular}
+			\caption{Truth Table for Bit D (Mod-10 Decrementer)}
+		\end{table}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|}
+				\hline
+				\textbf{ZY\textbackslash XW} & \textbf{00} & \textbf{01} & \textbf{11} & \textbf{10} \\
+				\hline
+				\textbf{00} & \cellcolor{grpRed}$1$ (S0) & $0$ (S1) & $0$ (S3) & $0$ (S2) \\
+				\hline
+				\textbf{01} & $0$ (S4) & $0$ (S5) & $0$ (S7) & $0$ (S6) \\
+				\hline
+				\textbf{11} & \cellcolor{grpRed}$d$ (S12) & $d$ (S13) & $d$ (S15) & \cellcolor{grpRed}$d$ (S14) \\
+				\hline
+				\textbf{10} & $0$ (S8) & \cellcolor{grpGreen}$1$ (S9) & $d$ (S11) & \cellcolor{grpRed}$d$ (S10) \\
+				\hline
+			\end{tabular}
+			\captionof{figure}{K-Map Grouping and Equation for Output Bit D (Mod-10 Decrementer)}
+		\end{table}
+		
+		\begin{justify}
+			\textbf{Group Description:} Groups corner cell S0 with don't-cares, and S9 with adjacent states.
+			
+			\textbf{Final Derivation:}
+			\begin{align}
+				D &= X'Y'(ZW + Z'W')
+			\end{align}
+		\end{justify}
+		
+		\vspace{1em}
+		\subsection{Summary Table of Decrementer Boolean Expressions}
+		
+		\begin{table}[H]
+			\centering
+			\begin{tabular}{|l|l|}
+				\hline
+				\textbf{Counter Stage} & \textbf{Minimized Boolean Expressions} \\
+				\hline
+				Mod-10 ($9 \rightarrow 0$) & 
+				$\begin{aligned}
+					A &= W' \\
+					B &= X'W'(Z'Y + ZY') + Z'WX \\
+					C &= Z'Y(X + W) + ZX'W'Y' \\
+					D &= X'Y'(ZW + Z'W')
+				\end{aligned}$ \\
+				\hline
+				Mod-6 ($5 \rightarrow 0$) & 
+				$\begin{aligned}
+					A &= W' \\
+					B &= YX'W' + Y'XW \\
+					C &= X'(YW + Y'W'), \quad D = 0
+				\end{aligned}$ \\
+				\hline
+				Mod-4 ($3 \rightarrow 0$) & 
+				$\begin{aligned}
+					A &= W' \\
+					B &= XW + X'W', \quad C = 0, \quad D = 0
+				\end{aligned}$ \\
+				\hline
+				Mod-3 ($2 \rightarrow 0$) & 
+				$\begin{aligned}
+					A &= XW', \quad B = X'W' \\
+					C &= 0, \quad D = 0
+				\end{aligned}$ \\
+				\hline
+			\end{tabular}
+			\caption{Decrementer Boolean Expressions for All Stages}
+		\end{table}
+		
+		\section{Multiplexing and Software Timer Architecture}
+		
+		\subsection{Display Multiplexing Algorithm}
+		In digital system design, multiplexing is utilized to optimize resource allocation by minimizing the number of input/output pins required to drive multiple components. In this clock configuration, all Binary-Coded Decimal (BCD) input lines (A through D) are shared in parallel across all six seven-segment displays. 
+		
+		Rather than powering all displays simultaneously, the system employs sequential activation. The microcontroller enables each display one at a time via dedicated enable pins ($EN[0..5]=D4\text{--}D9$). Each specific digit is activated for a precise duration of $1\text{ ms}$ before the system extinguishes it and instantly transitions to the next display. Because there are six sequential digits, a complete frame cycle requires $6 \times 1\text{ ms} = 6\text{ ms}$. This translates to a refresh rate of approximately $166.7\text{ Hz}$. By rapidly cycling through the sequence at this frequency, the design leverages the human eye's persistence of vision. This creates a fast alternating effect that appears as a solid, continuous visual output, successfully allowing a full six-digit display while significantly reducing hardware complexity.
+		\begin{figure}[H] % <--- Add [H] right here
+			\centering
+			\includegraphics[width=1\linewidth]{multiplex.png}
+			\caption{Multiplexing}
+			\label{fig:placeholder}
+		\end{figure}
+		\newpage
+		\subsection{Button Inputs and the \texttt{INPUT\_PULLUP} Configuration}
+		
+		\subsubsection{Addressing Floating Pins}
+		When a mechanical push button is unpressed, the circuit remains physically open. If a microcontroller pin is connected to an open circuit with no defined voltage reference, it enters a "floating" state. A floating pin acts similarly to an antenna, becoming highly susceptible to ambient electromagnetic noise. The microcontroller may interpret this noise as rapid, arbitrary fluctuations between HIGH and LOW logic states, leading to unpredictable system behavior.
+		
+		\subsubsection{Hardware vs. Software Resistor Configurations}
+		To establish a stable default logic state, a resistor must be utilized to tie the pin to a known voltage. 
+		
+		
+		\textbf{Internal Pull-Up Resistors (\texttt{INPUT\_PULLUP}):} The ATmega328 microcontroller on the Arduino Uno features internal pull-up resistors integrated directly into its silicon. The software command \texttt{pinMode(pin, INPUT\_PULLUP);} activates this internal circuitry, effectively connecting the pin to the internal $5\text{V}$ supply through a microscopic resistor. This anchors the pin securely at a HIGH state by default. When the button is pressed, the circuit is completed to ground, pulling the voltage down to register a LOW state. 
+	
+		\subsection*{Display Ghosting and the Blanking Mechanism}
+		\begin{itemize}
+			\item \textbf{The Ghosting Phenomenon:} In high-speed multiplexed displays, a visual glitch known as "ghosting" or "shadowing" occurs if the microcontroller updates the data lines (BCD inputs) while a display's power (enable pin) is still active. Because the sequential bit-shifting takes several microseconds to complete, the IC 7447 would momentarily decode unstable, transitional binary states, causing faint, incorrect segments to flicker visibly on the screen.
+			
+			\item \textbf{Software Resolution (\texttt{blankAllDisplays}):} To completely eliminate this visual artifact, the system enforces a strict hardware blackout sequence within the \texttt{showDigit()} function. 
+			
+			\item \textbf{The Three-Step Execution:}
+			\begin{enumerate}
+				\item \textbf{Blackout:} Before any new data is transmitted, the code executes \texttt{blankAllDisplays()}, which immediately drives all digit enable pins LOW. This cuts the $+5\text{V}$ power to every common anode, making the entire clock face completely dark.
+				\item \textbf{Data Shifting:} While the displays are unpowered, the Arduino safely executes the \texttt{for} loop, bit-shifting and transmitting the new 4-bit binary code to the IC 7447. The IC processes the changing signal in the dark.
+				\item \textbf{Target Activation:} Only after the \texttt{for} loop is completely finished and the final BCD signal is perfectly stable does the Arduino drive the specific target display's enable pin HIGH to illuminate the correct digit.
+			\end{enumerate}
+			
+			\item \textbf{Result:} Because this entire blackout and data-loading sequence takes less than $20\text{ microseconds}$, it is completely imperceptible to the human eye. This method securely prevents all ghosting artifacts while preserving the continuous visual illusion created by the rapid multiplexing loop.
+		\end{itemize}
+		\vspace{0.5cm}
+		
+		\section{Push-Button Interfacing and Input Debouncing}
+		
+		\subsection{Mechanical Switch Bouncing}
+		When a tactile push button is pressed or released, the internal metallic contacts vibrate against each other before settling into stable electrical contact.
+		\begin{itemize}
+			\item \textbf{Transient Noise:} This mechanical chatter generates rapid, erratic voltage oscillations lasting typically between $5\text{ ms}$ and $20\text{ ms}$.
+			\item \textbf{System Impact:} Since the ATmega328P operates at a clock frequency of $16\text{ MHz}$, it processes each microsecond-level pulse as an individual input event. A single physical press can therefore register multiple unwanted increments or erratic mode toggles.
+		\end{itemize}
+		
+		\subsection{Principle of Software Debouncing}
+		Software debouncing filters out contact noise programmatically without adding external analog RC filter networks.
+		\begin{itemize}
+			\item \textbf{Lockout Window:} When the microcontroller detects an initial logic state transition, it registers the input and forces a brief system pause for a fixed duration of $50\text{ ms}$.
+			\item \textbf{Contact Settling:} This delay window outlasts the mechanical switch bounce duration, ensuring only one valid action is registered per physical press.
+		\end{itemize}
+		
+		\subsection{Implementation Using \texttt{delay()}}
+		In this project, software debouncing is implemented utilizing the standard \texttt{delay(50)} function to generate software delays. When a button press is detected, the CPU halts all execution for $50\text{ ms}$. While blocking functions temporarily suspend the $1\text{ ms}$ display multiplexing loop, a $50\text{ ms}$ duration serves as a calculated trade-off: it is long enough to effectively filter out mechanical switch bounce, yet brief enough to minimize severe visual blackout on the displays during user interaction.
+		
+		\begin{lstlisting}[language=C, caption={Software Debouncing Implementation utilizing \texttt{delay()}}]
+void handle_button() {
+	int button_state = digitalRead(BUTTON_PIN);
+			
+	// Register trigger upon detecting a press
+	// (Assuming active-LOW logic due to INPUT_PULLUP)
+	if (button_state == LOW) {
+				
+		increment_selected_digit();
+					
+		// Block the CPU for 50 ms to allow mechanical contacts to settle
+		delay(50);
+				}
+			}
+		\end{lstlisting}
+		
+		\noindent \textbf{System Advantage:} Decoupling button timing from CPU execution maintains a stable $166.7\text{ Hz}$ display refresh rate while preventing false trigger events.
+		
+		\begin{figure}[H] % <--- Add [H] right here
+			\centering
+			\includegraphics[width=0.5\linewidth]{Push_Button.png}
+			\caption{Standard Push Button}
+			\label{fig:placeholder}
+		\end{figure}
+		
+		\newpage
+		\newpage
+		
+		\section{Teamwork and Acknowledgements}
+		
+		\subsection*{Reflections on Teamwork}
+		The successful completion of this digital timer and clock system was a direct result of dedicated teamwork and collaborative problem-solving. Bridging the gap between physical hardware assembly and precise software logic required a strategic division of labor. Tasks were distributed to leverage individual strengths, encompassing everything from the intricate wiring of the Arduino and IC 7447 displays to the rigorous derivation of the Mod-10 and Mod-6 combinational logic. 
+		
+		Throughout the engineering lifecycle, communication was our most valuable tool. When faced with complex challenges such as resolving the clock-halting bug in edit mode or fine-tuning the software debouncing utilizing \texttt{delay()} We relied on intensive, collective brainstorming. This shared effort not only accelerated the debugging process but also deepened our mutual understanding of state machines, and multiplexing architecture. 
+		
+		\subsection*{Acknowledgements}
+		As a two-person team, we would like to express our sincere gratitude to everyone who supported us in the realization of this project:
+		
+		\begin{itemize}
+			\item \textbf{Project Advisors \& Instructors:} For their invaluable guidance, technical expertise, and continuous encouragement from component research all the way to final system debugging. 
+			\item \textbf{Lab Staff \& Technicians:} For providing access to the necessary Arduino hardware, tactile buttons, 7-segment components, and a safe, conducive environment for circuit assembly.
+			\item \textbf{Artificial Intelligence Tools:} We extend our appreciation to the AI assistants that supported our development workflow. The ability to rapidly troubleshoot issues and clarify complex programming concepts was deeply beneficial while developing our software timer interrupts and switch debouncing principles.
+			\item \textbf{Peers \& Testers:} Finally, a special thank you to those who interacted with the final 5-button interface during the testing phases. Your practical feedback was crucial in helping us refine the tactile user experience and calibration modes.
+		\end{itemize}
+		
+	\end{document}
+	
