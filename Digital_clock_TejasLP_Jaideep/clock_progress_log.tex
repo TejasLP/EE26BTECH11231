@@ -1,9 +1,9 @@
 \let\negmedspace\undefined
 \let\negthickspace\undefined
 \documentclass[journal,12pt,onecolumn]{IEEEtran}
-\usepackage{graphicx} % Add this before \begin{document}
+\usepackage{graphicx} 
 	
-	% --- CUSTOM GVV PACKAGES ---
+	
 	\usepackage{cite}
 	\usepackage{gvv-book}
 	\usepackage{amsmath,amssymb,amsfonts,amsthm}
@@ -36,11 +36,11 @@
 	\definecolor{grpRed}{rgb}{1.0, 0.8, 0.8}
 	\definecolor{grpGreen}{rgb}{0.8, 1.0, 0.8}
 	\definecolor{grpYellow}{rgb}{1.0, 1.0, 0.8}
-	% --- ADDITIONAL PACKAGES ---
+	
 	\usepackage{pgfplots}
 	\pgfplotsset{compat=1.18}
 	
-	% --- METADATA & TITLE BLOCK ---
+	
 	\title{Digital Clock} \vspace{0.3cm}
 	\author{IIT Hyderabad \\ \vspace{0.1cm}
 		Department of Electrical Engineering [ICDT] \\ 
@@ -78,11 +78,11 @@
 	
 \section*{Table of Contents}
 
-% Adding some padding at the top
+
 \vspace{1cm}
 
 \begin{enumerate}
-	% This command increases the vertical space between each main item
+	
 	\setlength{\itemsep}{1.1em} 
 	
 	\item Project Overview \hfill 1
@@ -90,7 +90,7 @@
 	\item A Neat Look At The Finished Digital Clock \hfill 3
 	\item \textbf{Project Progress Log and Engineering Challenges} \hfill 4
 	\begin{itemize}
-		% This command increases the vertical space between sub-items
+		
 		\setlength{\itemsep}{0.8em} 
 		
 		\item \textbf{Phase 1}: Component Research and Circuit Planning \hfill 4
@@ -118,21 +118,21 @@
 	\item Teamwork and Acknowledgements \hfill 45
 \end{enumerate}
 
-% Adding some padding at the bottom
+
 \vspace{1cm}
 
 \newpage
 		
 		
 		\section{\textbf{A Neat Look At the Finished Digital Clock}}
-		\begin{figure}[H] % <--- Add [H] right here
+		\begin{figure}[H] 
 			\centering
 			\includegraphics[width=0.7\linewidth]{Complete1.jpeg}
 			\caption{The completed circuitry along with taped up Wires}
 			\label{fig:placeholder}
 		\end{figure}
 		
-		\begin{figure}[H] % <--- Add [H] right here
+		\begin{figure}[H] 
 			\centering
 			\includegraphics[width=0.75\linewidth]{Complete2.jpeg}
 			\caption{Illustrating the complete functionality of each display}
@@ -153,21 +153,21 @@
 		\begin{itemize}
 			\item \textbf{Monolithic Assembly Attempt:} The entire 6-digit circuit, decoder IC, and push-button network were wired all at once based on the initial schematic. Upon powering the Arduino, the clock failed to increment or display legible numbers, resulting only in erratic flickering across all displays.
 			
-			\begin{figure}[H] % <--- Add [H] right here
+			\begin{figure}[H] 
 				\centering
 				\includegraphics[width=0.5\linewidth]{PowerOn.png}
 				\caption{All the Segments have turned on}
 				\label{fig:placeholder}
 			\end{figure}
 			
-			\begin{figure}[H] % <--- Add [H] right here
+			\begin{figure}[H] 
 				\centering
 				\includegraphics[width=0.75\linewidth]{Completed_Circuit_InitialFail.jpg}
 				\caption{Circuit without any power}
 				\label{fig:placeholder}
 			\end{figure}
 			
-			\begin{figure}[H] % <--- Add [H] right here
+			\begin{figure}[H] 
 				\centering
 				\includegraphics[width=0.75\linewidth]{InitialFail2.jpg}
 				\caption{A side view of the figure}
@@ -186,7 +186,7 @@
 				\item If segment $a$ or $b$ illuminates, the display is Common Anode ($4$ displays passed this test).
 			\end{enumerate}
 			
-			\begin{figure}[H] % <--- Add [H] right here
+			\begin{figure}[H] 
 				\centering
 				\includegraphics[width=0.75\linewidth]{CommonAnode2.jpeg}
 				\caption{Common Anode Test negative for a display}
@@ -200,7 +200,7 @@
 				\item If segment $a$ or $b$ illuminates under this configuration, the display is Common Cathode ($2$ displays passed this test).
 			\end{enumerate}
 			
-			\begin{figure}[H] % <--- Add [H] right here
+			\begin{figure}[H] 
 				\centering
 				\includegraphics[width=0.75\linewidth]{CommonAnode1.jpeg}
 				\caption{Common Cathode Test positive for the same display}
@@ -215,20 +215,20 @@
 		\begin{itemize}
 			\item \textbf{Direct Microcontroller Verification (No IC):} Before integrating the BCD decoder, the baseline functionality of the Seconds Units display was verified. The segment pins were wired directly to the Arduino I/O pins through $220\Omega$ current-limiting resistors. This direct-drive configuration confirmed the basic sequential counting logic and individual LED segment integrity independently of the IC.
 			
-			\begin{figure}[H] % <--- Add [H] right here
+			\begin{figure}[H] 
 				\centering
 				\includegraphics[width=0.6\linewidth]{Seconds(6).jpeg}
 				\caption{Testing Seconds(Note the problem with the tail of 6)}
 				\label{fig:}
 			\end{figure}
-			\begin{figure}[H] % <--- Add [H] right here
+			\begin{figure}[H] 
 				\centering
 				\includegraphics[width=0.5\linewidth]{CorrectedSecondsNoIC.png}
 				\caption{Correcting tail segment display}
 				\label{fig:}
 			\end{figure}
 			
-			\begin{figure}[H] % <--- Add [H] right here
+			\begin{figure}[H] 
 				\centering
 				\includegraphics[width=0.75\linewidth]{Corrected9_secondsNoIC.jpg}
 				\caption{Correcting tail segment display of 9}
@@ -240,21 +240,21 @@
 			
 			\item \textbf{Hardware Tail Fix Solution:} To render complete digits, an auxiliary hardware override was implemented. Arduino pin D6 was hardwired directly to the segment $a$ line on the display bus, and pin D7 was wired to the segment $d$ line. The microcontroller software was updated to manually pull these specific pins LOW (sinking the current) only when the respective states for $6$ and $9$ are active, successfully rendering the missing tails.
 			
-			\begin{figure}[H] % <--- Add [H] right here
+			\begin{figure}[H] 
 				\centering
 				\includegraphics[width=0.75\linewidth]{CorrectedSeconds.png}
 				\caption{Correcting display with IC 7447 in the circuit}
 				\label{fig:}
 			\end{figure}
 			
-			\begin{figure}[H] % <--- Add [H] right here
+			\begin{figure}[H] 
 				\centering
 				\includegraphics[width=0.75\linewidth]{TensSeconds.jpg}
 				\caption{Enabling tens digits of seconds}
 				\label{fig:}
 			\end{figure}
 			
-			\begin{figure}[H] % <--- Add [H] right here
+			\begin{figure}[H] 
 				\centering
 				\includegraphics[width=0.75\linewidth]{TensSeconds2.jpg}
 				\caption{Enabling tens digits of seconds}
@@ -268,16 +268,16 @@
 		\begin{itemize}
 			\item \textbf{Minutes Integration:} The parallel cathode bus was extended to incorporate the third and fourth displays. The enable lines for the Minutes Tens and Minutes Units were mapped to Arduino pins D11 and D10. 
 			
-			\begin{figure}[H] % <--- Add [H] right here
+			\begin{figure}[H] 
 				\centering
 				\includegraphics[width=0.75\linewidth]{MinutesOnes.jpg}
 				\caption{Checking Units digit of minutes}
 				\label{fig:}
 			\end{figure}
 			
-			\begin{figure}[H] % <--- Add [H] right here
+			\begin{figure}[H] 
 				\centering
-				% Add angle=-90 (or angle=90) to correct the orientation
+				
 				\includegraphics[width=0.75\linewidth, angle=90]{MinutesTens1.jpg}
 				\caption{Checking Tens digit of minutes}
 				\label{fig:}
@@ -292,7 +292,7 @@
 				\item \textbf{Diagnosis \& Resolution:} This behavior pointed to internal current leakage within the module, which was confirmed through trial-and-error testing. Replacing the defective display eliminated the cross-feed and restored proper bus operation.
 			\end{itemize}
 			
-			\begin{figure}[H] % <--- Add [H] right here
+			\begin{figure}[H] 
 				\centering
 				\includegraphics[width=0.75\linewidth]{Faulty_display.jpeg}
 				\caption{One of the displays were dull, and the d segments are lighted up}
@@ -362,21 +362,21 @@
 				
 			\end{lstlisting}
 			
-			\begin{figure}[H] % <--- Add [H] right here
+			\begin{figure}[H] 
 				\centering
 				\includegraphics[width=0.75\linewidth]{HoursNoButtons.jpg}
 				\caption{Setting up the hours displays}
 				\label{fig:}
 			\end{figure}
 			
-			\begin{figure}[H] % <--- Add [H] right here
+			\begin{figure}[H] 
 				\centering
 				\includegraphics[width=0.75\linewidth]{Hours.jpeg}
 				\caption{Verifying reset of $23:59:59$}
 				\label{fig:}
 			\end{figure}
 			
-			\begin{figure}[H] % <--- Add [H] right here
+			\begin{figure}[H] 
 				\centering
 				\includegraphics[width=0.75\linewidth]{Hoursreset.jpg}
 				\caption{Working Reset}
@@ -403,25 +403,25 @@
 				\item \textbf{State Machine Resolution:} To resolve this, a software state flag was introduced. When Button 1 (A1) toggles the system into Edit Mode, the background clock tick is completely bypassed. The clock is forced to pause, and the selected digit blinks at $5\text{ Hz}$ ($200\text{ ms}$ ON, $200\text{ ms}$ OFF) to provide visual feedback. Timekeeping only resumes once the system is toggled back into Run Mode, ensuring precise digit-by-digit calibration without rollover interference.
 			\end{itemize}
 		\end{itemize}
-		\begin{figure}[H] % <--- Add [H] right here
+		\begin{figure}[H] 
 			\centering
-			% Add angle=-90 (or angle=90) to correct the orientation
+			
 			\includegraphics[width=0.75\linewidth]{5Buttons.jpg}
 			\caption{A Clearer look at the buttons}
 			\label{fig:}
 		\end{figure}
-		\begin{figure}[H] % <--- Add [H] right here
+		\begin{figure}[H] 
 			\centering
-			% Add angle=-90 (or angle=90) to correct the orientation
+			
 			\includegraphics[width=0.75\linewidth]{General.png}
 			\caption{A general view of the final circuit}
 			\label{fig:}
 			
 		\end{figure}
 		
-		\begin{figure}[H] % <--- Add [H] right here
+		\begin{figure}[H] 
 			\centering
-			% Add angle=-90 (or angle=90) to correct the orientation
+			
 			\includegraphics[width=0.75\linewidth]{Complete.jpeg}
 			\caption{The final product}
 			\label{fig:}
@@ -571,14 +571,14 @@
 		
 		\begin{figure}[H]
 			\centering
-			% The scale=0.5 parameter shrinks the image to 50% of its original resolution/size
+			
 			\includegraphics[scale=0.5]{IC2.png}
 			\caption{IC 7447}
 			\label{fig:half_size_image}
 		\end{figure}
 		
 		
-		\begin{figure}[H] % <--- Add [H] right here
+		\begin{figure}[H] 
 			\centering
 			\includegraphics[width=1\linewidth]{IC.png}
 			\caption{Connections of the IC}
@@ -637,7 +637,7 @@
 		
 		\begin{figure}[H]
 			\centering
-			% The scale=0.5 parameter shrinks the image to 50% of its original resolution/size
+			
 			\includegraphics[scale=0.2]{ohm240.jpg}
 			\caption{$240\Omega$  resistors}
 			\label{fig:half_size_image}
@@ -648,7 +648,7 @@
 		\section{Arduino Uno Hardware Overview}
 		The Arduino Uno serves as the central processing and control unit for the digital clock. Below is an overview of its key hardware components:
 		
-		\begin{figure}[H] % <--- Add [H] right here
+		\begin{figure}[H] 
 			\centering
 			\includegraphics[width=1\linewidth]{Arduino_controller.png}
 			\caption{Arduino Uno}
@@ -1700,7 +1700,7 @@
 		In digital system design, multiplexing is utilized to optimize resource allocation by minimizing the number of input/output pins required to drive multiple components. In this clock configuration, all Binary-Coded Decimal (BCD) input lines (A through D) are shared in parallel across all six seven-segment displays. 
 		
 		Rather than powering all displays simultaneously, the system employs sequential activation. The microcontroller enables each display one at a time via dedicated enable pins ($EN[0..5]=D4\text{--}D9$). Each specific digit is activated for a precise duration of $1\text{ ms}$ before the system extinguishes it and instantly transitions to the next display. Because there are six sequential digits, a complete frame cycle requires $6 \times 1\text{ ms} = 6\text{ ms}$. This translates to a refresh rate of approximately $166.7\text{ Hz}$. By rapidly cycling through the sequence at this frequency, the design leverages the human eye's persistence of vision. This creates a fast alternating effect that appears as a solid, continuous visual output, successfully allowing a full six-digit display while significantly reducing hardware complexity.
-		\begin{figure}[H] % <--- Add [H] right here
+		\begin{figure}[H] 
 			\centering
 			\includegraphics[width=1\linewidth]{multiplex.png}
 			\caption{Multiplexing}
@@ -1772,7 +1772,7 @@ void handle_button() {
 		
 		\noindent \textbf{System Advantage:} Decoupling button timing from CPU execution maintains a stable $166.7\text{ Hz}$ display refresh rate while preventing false trigger events.
 		
-		\begin{figure}[H] % <--- Add [H] right here
+		\begin{figure}[H] 
 			\centering
 			\includegraphics[width=0.5\linewidth]{Push_Button.png}
 			\caption{Standard Push Button}
