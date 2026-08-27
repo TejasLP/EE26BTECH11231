@@ -400,7 +400,7 @@
 				
 				\item \textbf{Troubleshooting Edit Mode (Clock Halting Bug):} Initially, when entering calibration mode via Button 1, the background timer interrupt continued to run, causing the time to advance while the user was attempting to edit the digits. 
 				
-				\item \textbf{State Machine Resolution:} To resolve this, a software state flag was introduced. When Button 1 (A1) toggles the system into Edit Mode, the background clock tick is completely bypassed. The clock is forced to pause, and the selected digit blinks at $5\text{ Hz}$ ($200\text{ ms}$ ON, $200\text{ ms}$ OFF) to provide visual feedback. Timekeeping only resumes once the system is toggled back into Run Mode, ensuring precise digit-by-digit calibration without rollover interference.
+				\item \textbf{State Machine Resolution:} To resolve this, We introduced a software flag. When Button 1 (A1) toggles the system into Edit Mode, the background clock tick is completely bypassed. The clock is forced to pause, and the selected digit blinks at $5\text{ Hz}$ ($200\text{ ms}$ ON, $200\text{ ms}$ OFF) to provide visual feedback. Timekeeping only resumes once the system is toggled back into Run Mode, ensuring precise digit-by-digit calibration without rollover interference.
 			\end{itemize}
 		\end{itemize}
 		\begin{figure}[H] 
