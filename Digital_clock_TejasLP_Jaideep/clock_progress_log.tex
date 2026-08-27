@@ -151,7 +151,7 @@
 		
 		\subsubsection*{Challenge 1: Full-Circuit Assembly Failure and Polarity Diagnosis}
 		\begin{itemize}
-			\item \textbf{Monolithic Assembly Attempt:} The entire 6-digit circuit, decoder IC, and push-button network were wired all at once based on the initial schematic. Upon powering the Arduino, the clock failed to increment or display legible numbers, resulting only in erratic flickering across all displays.
+			\item \textbf{Monolithic Assembly Attempt:} We wired the entire 6-digit circuit, decoder IC, and push-button network all at once based on our initial schematic. Upon powering the Arduino, we saw that the clock failed to increment or display legible numbers, resulting only in erratic flickering across all of our displays.
 			
 			\begin{figure}[H] 
 				\centering
@@ -175,13 +175,13 @@
 			\end{figure}
 			
 			
-			\item \textbf{Modular Isolation (Seconds Stage):} To isolate the root cause, the full circuit was stripped down to a single display to test only the Seconds Units digit ($0 \to 9$) with the IC 7447.
-			\item \textbf{Fault Assessment \& Polarity Testing:} Even on a single digit, segments behaved irregularly. A manual polarity test was conducted using a $220\,\Omega$ current-limiting resistor to verify each display:
+			\item \textbf{Modular Isolation (Seconds Stage):}To isolate the root cause, we stripped the full circuit down to a single display to test only the Seconds Units digit ($0 \to 9$) with the IC 7447.
+			\item \textbf{Fault Assessment \& Polarity Testing:} Even on a single digit, segments behaved irregularly. We conducted a manual polarity test using a $240\,\Omega$ current-limiting resistor to verify each display:
 			
 			\textbf{Common Anode Display (CA) Test Procedure:}
 			\begin{enumerate}
 				\item Connect a jumper wire from Arduino $+5\text{V}$ directly to the display $COM$ pin (Pin 3 or Pin 8).
-				\item Connect a jumper wire from Arduino $\text{GND}$ to one leg of a $220\,\Omega$ resistor.
+				\item Connect a jumper wire from Arduino $\text{GND}$ to one leg of a $240\,\Omega$ resistor.
 				\item Connect the other leg of the resistor to Pin 7 (segment $a$) or Pin 6 (segment $b$).
 				\item If segment $a$ or $b$ illuminates, the display is Common Anode ($4$ displays passed this test).
 			\end{enumerate}
@@ -196,7 +196,7 @@
 			\textbf{Common Cathode Display (CC) Test Procedure:}
 			\begin{enumerate}
 				\item Reverse the connections: connect Arduino $\text{GND}$ to the $COM$ pin.
-				\item Connect Arduino $+5\text{V}$ through the $220\,\Omega$ resistor to Pin 7 (segment $a$) or Pin 6 (segment $b$).
+				\item Connect Arduino $+5\text{V}$ through the $240\,\Omega$ resistor to Pin 7 (segment $a$) or Pin 6 (segment $b$).
 				\item If segment $a$ or $b$ illuminates under this configuration, the display is Common Cathode ($2$ displays passed this test).
 			\end{enumerate}
 			
@@ -213,7 +213,7 @@
 		\newpage
 		\subsection*{\textbf{Phase 2}: Sequential Assembly and the Tail Fix (Seconds Stage)}
 		\begin{itemize}
-			\item \textbf{Direct Microcontroller Verification (No IC):} Before integrating the BCD decoder, the baseline functionality of the Seconds Units display was verified. The segment pins were wired directly to the Arduino I/O pins through $220\Omega$ current-limiting resistors. This direct-drive configuration confirmed the basic sequential counting logic and individual LED segment integrity independently of the IC.
+			\item \textbf{Direct Microcontroller Verification (No IC):} Before integrating the BCD decoder, we verified the baseline functionality of the Seconds Units display . The segment pins were wired directly to the Arduino I/O pins through $240\Omega$ current-limiting resistors. This direct-drive configuration confirmed the basic sequential counting logic and individual LED segment integrity independently of the IC.
 			
 			\begin{figure}[H] 
 				\centering
@@ -234,7 +234,7 @@
 				\caption{Correcting tail segment display of 9}
 				\label{fig:}
 			\end{figure}
-			\item \textbf{Seconds Multiplexing Setup:} Following the successful direct verification, the full seconds stage was assembled. The display enable lines for the Seconds Tens and Seconds Units were routed to Arduino pins D8 and D9, respectively. The displays were successfully driven by the IC 7447 BCD bus utilizing Arduino pins D2 through D5.
+			\item \textbf{Seconds Multiplexing Setup:} Following the successful direct verification, the full seconds stage was assembled. The display enable lines for the Seconds Tens and Seconds Units were routed to Arduino pins D9 and D8, respectively. The displays were successfully driven by the IC 7447 BCD bus utilizing Arduino pins D2 through D5.
 			
 			\item \textbf{The Numerals 6 and 9 Rendering Flaw:} Upon testing the seconds cascade, it was observed that the standard IC 7447 decoder fails to illuminate the top segment for the numeral `6` and the bottom segment for the numeral `9`. 
 			
@@ -243,7 +243,7 @@
 			\begin{figure}[H] 
 				\centering
 				\includegraphics[width=0.75\linewidth]{CorrectedSeconds.png}
-				\caption{Correcting display with IC 7447 in the circuit}
+				\caption{Connecting display with IC 7447 in the circuit}
 				\label{fig:}
 			\end{figure}
 			
@@ -462,8 +462,8 @@
 				& D4 & Pin 2 ($C$) \\ \cline{2-3}
 				& D5 & Pin 6 ($D$ - MSB) \\ \hline
 				\multirow{6}{*}{\textbf{Display Enables}} 
-				& D6 & Segment $a$ line on displays (top tail fix for $6$) \\ \cline{2-3}
-				& D7 & Segment $d$ line on displays (Bottom tail fix for $9$) \\ \cline{2-3}
+				& D6 & Segment $a$ line on displays (top tail fix for $6$) to pin 13 of IC-7447\\ \cline{2-3}
+				& D7 & Segment $d$ line on displays (Bottom tail fix for $9$) to pin 10 of IC-7447\\ \cline{2-3}
 				& A0 & Display 1 (Hours Tens: $0\to2$) \\ \cline{2-3}
 				& D12 & Display 2 (Hours Units: $0\to9$ or $0\to3$) \\ \cline{2-3}
 				& D11 & Display 3 (Minutes Tens: $0\to5$) \\ \cline{2-3}
