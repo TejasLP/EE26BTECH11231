@@ -113,7 +113,7 @@
 		\setlength{\itemsep}{0.8em}
 		\item Mechanical Switch Bouncing \hfill 43
 		\item Principle of Software Debouncing \hfill 44
-		\item Implementation Using \texttt{delay()} \hfill 44
+		\item Implementation Using \texttt{millis()} \hfill 44
 	\end{itemize}
 	\item Teamwork and Acknowledgements \hfill 45
 \end{enumerate}
@@ -1699,7 +1699,7 @@
 		\subsection{Display Multiplexing Algorithm}
 		In digital system design, multiplexing is utilized to optimize resource allocation by minimizing the number of input/output pins required to drive multiple components. In this clock configuration, all Binary-Coded Decimal (BCD) input lines (A through D) are shared in parallel across all six seven-segment displays. 
 		
-		Rather than powering all displays simultaneously, the system employs sequential activation. The microcontroller enables each display one at a time via dedicated enable pins ($EN[0..5]=D4\text{--}D9$). Each specific digit is activated for a precise duration of $1\text{ ms}$ before the system extinguishes it and instantly transitions to the next display. Because there are six sequential digits, a complete frame cycle requires $6 \times 1\text{ ms} = 6\text{ ms}$. This translates to a refresh rate of approximately $166.7\text{ Hz}$. By rapidly cycling through the sequence at this frequency, the design leverages the human eye's persistence of vision. This creates a fast alternating effect that appears as a solid, continuous visual output, successfully allowing a full six-digit display while significantly reducing hardware complexity.
+		Rather than powering all displays simultaneously, the system employs sequential activation. The microcontroller enables each display one at a time via dedicated enable pins ($EN[0..5]=D8\text{--}D12 and A0$). Each specific digit is activated for a precise duration of $1\text{ ms}$ before the system extinguishes it and instantly transitions to the next display. Because there are six sequential digits, a complete frame cycle requires $6 \times 1\text{ ms} = 6\text{ ms}$. This translates to a refresh rate of approximately $166.7\text{ Hz}$. By rapidly cycling through the sequence at this frequency, the design leverages the human eye's persistence of vision. This creates a fast alternating effect that appears as a solid, continuous visual output, successfully allowing a full six-digit display while significantly reducing hardware complexity.
 		\begin{figure}[H] 
 			\centering
 			\includegraphics[width=1\linewidth]{multiplex.png}
@@ -1751,23 +1751,30 @@
 			\item \textbf{Contact Settling:} Subsequent noise pulses within this window are ignored until the switch contacts settle, registering exactly one valid action per physical press without stalling background timer loops or display multiplexing.
 		\end{itemize}
 		
-		\subsection{Implementation Using \texttt{delay()}}
-		In this project, software debouncing is implemented utilizing the standard \texttt{delay(50)} function to generate software delays. When a button press is detected, the CPU halts all execution for $50\text{ ms}$. While blocking functions temporarily suspend the $1\text{ ms}$ display multiplexing loop, a $50\text{ ms}$ duration serves as a calculated trade-off: it is long enough to effectively filter out mechanical switch bounce, yet brief enough to minimize severe visual blackout on the displays during user interaction.
+		\subsection{Implementation Using \texttt{millis()}}
+		In this project, software debouncing is implemented utilizing a non-blocking lockout window with a $150\text{ ms}$ re-trigger threshold. Instead of halting CPU execution with a standard \texttt{delay()} function, the program tracks elapsed time using the \texttt{millis()} function. When a button press is detected, it only registers if $150\text{ ms}$ have passed since the last valid press. This approach ensures that the $1\text{ ms}$ display multiplexing loop is never suspended, completely eliminating any visual blackout or flickering on the displays during user interaction.
 		
-		\begin{lstlisting}[language=C, caption={Software Debouncing Implementation utilizing \texttt{delay()}}]
-void handle_button() {
-	int button_state = digitalRead(BUTTON_PIN);
-			
-	// Register trigger upon detecting a press
-	// (Assuming active-LOW logic due to INPUT_PULLUP)
-	if (button_state == LOW) {
+		\begin{lstlisting}[language=C, caption={Software Debouncing Implementation utilizing \texttt{millis()}}]
+	unsigned long last_press_time = 0;
+	const unsigned long debounce_delay = 150;
+	
+	void handle_button() {
+		int button_state = digitalRead(BUTTON_PIN);
+		unsigned long current_time = millis();
+		
+		// Register trigger upon detecting a press
+		// (Assuming active-LOW logic due to INPUT_PULLUP)
+		if (button_state == LOW) {
 				
-		increment_selected_digit();
-					
-		// Block the CPU for 50 ms to allow mechanical contacts to settle
-		delay(50);
-				}
+			// Check if the 150 ms lockout window has passed
+			if ((current_time - last_press_time) >= debounce_delay) {
+				increment_selected_digit();
+						
+				// Update the timestamp of the last valid press
+				last_press_time = current_time; 
 			}
+		}
+}
 		\end{lstlisting}
 		
 		\noindent \textbf{System Advantage:} Decoupling button timing from CPU execution maintains a stable $166.7\text{ Hz}$ display refresh rate while preventing false trigger events.
