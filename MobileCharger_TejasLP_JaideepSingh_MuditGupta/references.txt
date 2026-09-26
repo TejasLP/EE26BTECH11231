@@ -1,0 +1,31 @@
+Mobile Charger - References Used
+
+* Charger Lab - main.pdf** ([https://github.com/gadepall/signal-processing/blob/main/ee3900-assignments/charger_lab/main.pdf])
+	- Analog circuit design and AC-to-DC conversion principles
+	- Baseline component selection (step-down transformer, diodes, smoothing capacitor, linear regulator)
+	- Circuit schematic and foundational assembly guidelines
+
+
+
+* Artificial Intelligence Tools
+	- Circuit building and layout organization on the perf board
+	- Researching the functional mechanics of components, primarily the 12-0-12 transformer, silicon diodes, 100µF electrolytic capacitor, and the LM7805 linear regulator
+	- Mathematical derivations and calculations, specifically for peak voltage capture 
+	- Understanding core concepts applied in the circuit, such as full-wave rectification, pulsating DC vs continuous DC, capacitive smoothing.
+	- Learning the operation, setup, and calibration of the Tektronix DSO3062A digital storage oscilloscope
+	- Troubleshooting hardware issues, including diagnosing distorted DSO traces from a faulty diode, determining the cause of the initial regulator's    thermal failure, and mitigating oscilloscope ground loop risks
+	- A "How to" for LaTeX syntax, equations, and better organizing the final project document
+
+
+
+* Surfing on the Web (Googling)
+	- Researching the USB Battery Charging (BC 1.2) specification to understand the Dedicated Charging Port (DCP) handshake (bridging D+ and D- pins)
+	- Obtaining precise pinout diagrams for the USB Type-A female receptacle and the TO-220 IC package
+	- Sourcing certain reference images for the physical components and hardware setups to showcase in the LaTeX document
+
+
+
+* Assistance from the TAs
+	- Guidance on 3D modelling procedures, resolving CAD clearance anxieties for hand-soldered parts, and structuring the physical enclosure design
+	- Guidance on safe probing techniques across the AC secondary and rectified DC rails to prevent accidental short circuits
+	- General queries regarding hardware fabrication, perf board soldering, and laboratory equipment use

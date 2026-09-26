@@ -1,0 +1,563 @@
+\let\negmedspace\undefined
+\let\negthickspace\undefined
+\documentclass[journal,12pt,onecolumn]{IEEEtran}
+\usepackage{graphicx} % Add this before \begin{document}
+	
+	% --- CUSTOM GVV PACKAGES ---
+	\usepackage{cite}
+	\usepackage{gvv-book}
+	\usepackage{amsmath,amssymb,amsfonts,amsthm}
+	\usepackage{algorithmic}
+	\usepackage{graphicx}
+	\usepackage{textcomp}
+	\usepackage{xcolor}
+	\usepackage{colortbl}
+	\usepackage{txfonts}
+	\usepackage{listings}
+	\usepackage{enumitem}
+	\usepackage{mathtools} 
+	\usepackage{gensymb}
+	\usepackage{comment}
+	\usepackage{ragged2e}
+	\usepackage[breaklinks=true]{hyperref}
+	\usepackage[latin1]{inputenc}
+	\usepackage{array}
+	\usepackage{longtable}
+	\usepackage{calc}
+	\usepackage{multirow}
+	\usepackage{hhline}
+	\usepackage{ifthen}
+	\usepackage{lscape}
+	\usepackage{tabularx}
+	\usepackage{float}
+	\usepackage{caption}
+	\usepackage{gvv}
+	\usepackage{etoolbox}
+	\definecolor{grpRed}{rgb}{1.0, 0.8, 0.8}
+	\definecolor{grpGreen}{rgb}{0.8, 1.0, 0.8}
+	\definecolor{grpYellow}{rgb}{1.0, 1.0, 0.8}
+	% --- ADDITIONAL PACKAGES ---
+	\usepackage{pgfplots}
+	\pgfplotsset{compat=1.18}
+	
+	% --- METADATA & TITLE BLOCK ---
+\title{Mobile Charger} \vspace{0.3cm}
+\author{IIT Hyderabad \\ \vspace{0.1cm}
+	Department of Electrical Engineering [ICDT] \\ 
+	\vspace{0.55cm}EE1010     \\ Maths For Electrical Engineering \\ \vspace{0.15cm} Prof. G.~V.~V. Sharma \\\vspace{0.8cm}
+	\begin{tabular}{c@{\hspace{1.5cm}}c@{\hspace{1.5cm}}c}
+		Tejas L P & Jaideep Singh & Mudit Gupta \\[2pt]
+		EE26BTECH11231 & EE26BTECH11213 & EE26BTECH11216
+	\end{tabular}\\\vspace{0.2cm} }
+\date{\today}
+
+\date{\today}
+
+	\begin{document}
+		
+		\maketitle
+		\section{Project Overview}
+		\noindent \textbf{Project Objective:} \\
+		To design and construct an AC-to-DC regulated power supply that converts a 12V RMS AC input into a stable 5V DC output. The circuit utilizes a full-wave bridge rectifier, a smoothing capacitor, and a 7805 linear voltage regulator. The output is integrated with a USB Type-A port configured to the Dedicated Charging Port (DCP) standard to safely supply power and charge mobile devices. Additionally, the project includes fabricating a functional and aesthetically pleasing enclosure for the final charger.
+		
+		\noindent \textbf{Key Features:}
+		\begin{enumerate}
+			\item \textbf{12-0-12 Transformer:} Inputs standard 230V and converts into a 12V AC signal
+			\item \textbf{4-diode Rectifier:}Converts the alternating current (AC) signal from the transformer into a unidirectional, pulsating direct current (DC)
+			\item \textbf{Capacitor:} Filters the pulsating DC from the rectifier, capturing the peak of the AC wave to provide a steady ~17-18V DC input voltage for the regulator.
+			\item \textbf{Regulator and Heatsink:} Steps down the ~18V input to provide a clean, stable 5V DC output, while the attached heatsink safely dissipates the excess voltage as thermal energy.
+            \item \textbf{USB A pin:} Configured as a Dedicated Charging Port (DCP) by bridging the data pins, allowing the safe delivery of 5V power to charge mobile devices.
+            \item \textbf{Power Indicator:} A standard red LED, placed in series with a $680\Omega$ current-limiting resistor, illuminates to visually confirm the 5V circuit is live when the transformer is plugged in.
+		\end{enumerate} 
+			\section{Components}
+		\begin{itemize}
+			\item \textbf{12-0-12 Transformer:}1 
+			\item \textbf{7805 Regulator:}1
+			\item \textbf{Female USB A Pin:}1
+			\item \textbf{PerfBoard:}1 
+			\item \textbf{Diode:}4
+			\item $100\mu F$ \textbf{Capacitor:}1
+			\item \textbf{Standard Red LED:}1 
+			\item \textbf{Resistor ($680\Omega$):}1
+		\end{itemize}
+		\newpage
+
+\section*{Table of Contents}
+
+\vspace{1cm}
+
+\begin{enumerate}
+	
+	\setlength{\itemsep}{1.1em} 
+	
+	\item Project Overview \hfill 1
+	\item Components \hfill 1
+	\item A Neat Look At The Finished Mobile Charger \hfill 3
+	\item \textbf{Project Progress Log and Engineering Challenges} \hfill 4
+	\begin{itemize}
+		
+		\setlength{\itemsep}{0.8em} 
+		
+		\item \textbf{Phase 1}: Component Layout and Transformer Integration \hfill 4
+		\item \textbf{Phase 2}: Rectifier Assembly and Semiconductor Diode Verification via DSO \hfill 7
+		\item \textbf{Phase 3}: Smoothing Filter Integration ($100\mu$F Capacitor) \hfill 11
+		\item \textbf{Phase 4}: IC 7805 Regulator Replacement and 5V Output Calibration \hfill 14
+		\item \textbf{Phase 5}: USB Data Pin Bridging (DCP Protocol) and LED Indicator \hfill 16
+        \item \textbf{Phase 6}: 3D modelling challenges in FreeCAD \hfill 20
+	\end{itemize}
+	\item Project Reflections and Learning Outcomes \hfill 28
+	\item Teamwork and Acknowledgements \hfill 29
+\end{enumerate}
+
+\vspace{1cm}
+
+\newpage
+
+\section{A Neat Look At The Finshed Mobile Charger}
+\begin{figure}[H] 
+			\centering
+			\includegraphics[width=0.7\linewidth]{complete_circuit.jpeg}
+			\caption{The completed circuitry along with taped up Wires}
+			\label{fig:placeholder}
+		\end{figure}
+
+\begin{figure}[H] 
+			\centering
+			\includegraphics[width=0.65\linewidth]{charging.jpeg}
+			\caption{Illustrating the complete functionality of each display}
+			\label{fig:placeholder}
+		\end{figure}
+
+        
+\newpage
+
+\section{\textbf{Project Progress Log and Engineering Challenges}}
+\subsection*{\textbf{Phase 1:} Component Layout and Transformer Integration}
+
+\begin{itemize}
+    \item \textbf{Objective:} Design, floor-plan, and bench-test the primary power conversion stage on prototyping perfboard without microcontrollers or solderless breadboards, establishing an isolated AC step-down rail capable of supplying downstream linear regulation stages.
+    
+    \item \textbf{Transformer Secondary Bench Characterization:} The primary conversion stage receives power from a step-down transformer converting $230\text{ V}$ AC mains ($50\text{ Hz}$) to an isolated nominal $12\text{ V}$ AC RMS secondary output. Open-circuit bench characterization was conducted using an Tektronix DSO3062A digital storage oscilloscope (CH1, 10X probe attenuation) alongside a Fluke 101 digital multimeter. The measured open-circuit secondary voltage demonstrated a slight elevation typical of unloaded magnetics, outputting approximately $13.3\text{ V}$ AC RMS:
+    \begin{align}
+        V_{\text{peak(meas)}} &= V_{\text{RMS(meas)}} \times \sqrt{2} \nonumber \\
+        &= 13.3\text{ V} \times 1.4142 \approx 18.81\text{ V}
+    \end{align}
+    This peak amplitude represents the theoretical upper rail potential prior to semiconductor conduction losses.
+
+    \item \textbf{Perfboard Floor Planning and Spatial Isolation:} Because the circuit was assembled on unclad prototyping perfboard using point-to-point soldered wire paths rather than a breadboard, physical layout geometry was organized sequentially to mirror signal flow:
+    \begin{enumerate}
+        \item \textbf{AC Ingress Zone:} Positioned along the outer left perimeter of the board to terminate transformer secondary leads securely and maintain spatial separation from low-voltage DC rails.
+        \item \textbf{Rectification and Filtering Core:} Centralized adjacent to the AC input, reserving space for the 4-diode diamond bridge and the large radial footprint of the electrolytic reservoir capacitor.
+        \item \textbf{Linear Regulator Thermal Zone:} Mounted with the LM7805 and its fitted aluminum heatsink positioned with clearance from heat-sensitive electrolytic capacitors to prevent thermal degradation.
+        \item \textbf{DC Distribution and USB Egress Rail:} Dedicated to the right board edge, terminating directly into the female USB Type-A port and the status LED indicator for clean integration into the 3D-printed enclosure.
+    \end{enumerate}
+\end{itemize}
+
+\subsubsection*{Challenge 1: Transformer Lead Fracture and Primary Voltage Verification}
+\begin{itemize}
+    \item \textbf{Initial Lead Damage and Soldering Repair:} During initial inspection and setup, the transformer wires were found to be physically broken at the terminal junction, resulting in an open circuit. To establish reliable mechanical and electrical continuity, the damaged leads were stripped back, freshly tinned, and resoldered with protective insulation before being wired to the primary power source.
+    
+    \item \textbf{Secondary Output Multimeter Verification:} After resoldering the leads and powering the transformer, the stepped-down secondary AC output was verified using a standard digital multimeter set to AC voltage mode. Probing across the secondary terminals confirmed an output reading of $13.26\text{ V}$ AC RMS, validating proper step-down operation, but displaying slight voltage elevation above the nominal $12\text{ V}$ AC rating. Upon further research, along with trial and error, this was deemed as normal behaviour. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[angle=90,width=0.6\linewidth]{transformer-reading1.jpg}
+    \caption{Multimeter reading confirming the stepped-down secondary AC voltage ($13.26\text{ V}$ AC RMS)}
+    \label{fig:transformer_reading}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[angle=-90,width=0.6\linewidth]{transformer-reading2.jpg}
+    \caption{Multimeter reading confirming the correct frequency of AC volatge as $50Hz$}
+    \label{fig:transformer_reading}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{soldering.jpg}
+    \caption{A glimpse at soldering}
+    \label{fig:soldering}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{soldered-trans.jpg}
+    \caption{Transformer after apt Soldering}
+    \label{fig:soldered transformer}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{transformerOutput.jpeg}
+    \caption{Sinusoidal waveform of the transformer outlet voltage}
+    \label{fig:soldered transformer}
+\end{figure}
+\end{itemize}
+
+\subsection*{\textbf{Phase 2:} Rectifier Assembly and Semiconductor Diode Verification via DSO}
+
+\begin{itemize}
+    \item \textbf{Objective:} Construct a full-wave bridge rectifier using discrete silicon diodes on prototyping perfboard, convert the stepped-down secondary AC waveform into a unidirectional pulsating DC rail, and verify the rectification dynamics using the Tektronix DSO3062A digital storage oscilloscope.
+
+    \item \textbf{Bridge Topology and Full-Wave Rectification Mechanics:} Four discrete silicon rectifier diodes were arranged and soldered in an expanded diamond bridge topology. During the positive half-cycle of the $50\text{ Hz}$ input sine wave, the top terminal is positive relative to the bottom, forward-biasing two opposing diodes while reverse-biasing the remaining pair. During the negative half-cycle, polarities invert, causing the alternate diode pair to conduct while the first pair shuts off. This continuous steering inverts the negative excursions of the AC cycle into the positive domain, transforming the $50\text{ Hz}$ alternating signal into a unidirectional pulsating DC signal at double the frequency ($100\text{ Hz}$, period $T = 10\text{ ms}$).
+    
+    \item \textbf{Semiconductor Forward Voltage Drop and Multimeter Verification:} Because current must traverse exactly two forward-biased PN junctions in series during each half-cycle, internal semiconductor losses reduce the output voltage. Standard silicon diodes require roughly $0.7\text{ V}$ to $0.75\text{ V}$ to conduct, resulting in a combined series voltage drop of approximately $1.5\text{ V}$. When measuring the raw pulsating wave with a multimeter on the DC setting, the instrument calculates the average effective voltage. Subtracting this $1.5\text{ V}$ hardware loss from the transformer's initial output yields the steady, equivalent reading of $11.75\text{ V}$ DC measured across the bridge. Without capacitive filtering, this pulsating rail periodically drops completely to $0\text{ V}$ at every zero-crossing boundary. This is also what we observed after using functioning diodes and a new perf board
+    \end{itemize}
+    \subsubsection*{Challenge 2: Observed failure in the full wave rectifier output}
+    \begin{itemize}
+    \item \textbf{Tektronix DSO3062A Bench Verification and Diode Failure:} During the initial bench testing, the Tektronix DSO3062A oscilloscope revealed severe irregularities in the waveform across the semiconductor diodes. Instead of the expected continuous sequence of positive half-sine peaks at $100\text{ Hz}$, the trace displayed a distorted $50\text{ Hz}$ output with entirely missing half-cycles. This indicated that one of the discrete diodes in the bridge was faulty and failing to conduct. Due to this component failure, the entire rectifier section had to be completely reassembled from scratch on a new perf board.
+    \end{itemize}
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{rectifier_fail_50HzOut_dso.png}
+    \caption{Observed failure in output frequency}
+    
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{rectifier_fail_dso.png}
+    \caption{Observed failure in graph}
+\end{figure}
+
+\subsubsection*{Challenge 3: Perfboard Failure and Reconstruction of Rectifier}
+\begin{itemize}
+    \item \textbf{Damaging of PerfBoard:} Attempting to desolder the defective diode required learning and adapting to a manual desoldering pump. Repeated heat application from the iron combined with the mechanical recoil and suction force caused several fragile copper eyelets on the perfboard to tear away from the substrate and display visible damage. In addition, the excessive thermal exposure during desoldering risked degrading the physical leads and junction integrity of the adjacent diodes.
+
+    \item \textbf{Replacing Components and rebuilding Circuit:} Because the lifted copper pads could no longer provide reliable mechanical anchoring or solid electrical continuity, the suspect diodes were discarded and replaced with fresh silicon diodes. The perfboard was also replaced with a similar, cleaner perfboard from the labs. Following this, the circuit was reconstructed with the transformer wires from the 12V terminal and the diodes resoldered to the the new perfboard.
+
+    \item \textbf{Verification Through DSO:} The reconstructed rectifier was reconnected to the secondary AC supply and probed with the digital storage oscilloscope. However, rather than a perfectly smooth theoretical curve, the captured trace exhibited noticeable high-frequency noise, jagged irregularities, and asymmetric distortion along the sinusoidal peaks.
+    
+    \item \textbf{Waveform Distortion and Environmental Noise Factors:} The captured output was not a mathematically pure pulsating sine wave; it exhibited high-frequency fuzz and jagged peak distortion. This is an expected real-world result of probing an unfiltered, raw rectifier circuit. The distortion primarily stems from harmonic noise on the 230V AC mains grid (caused by local non-linear loads) being passed through the transformer. Additionally, without the $100\mu\text{F}$ smoothing capacitor installed to act as a low-pass filter, the high-impedance perfboard traces and the oscilloscope's ground loop act as an antenna, picking up ambient electromagnetic interference (EMI) from surrounding lab equipment.
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{desolder.jpeg}
+    \caption{Attempting to desolder the circuit}
+\end{figure}
+    
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{rectifier_working_dso.png}
+    \caption{Corrected readings across the rectifier}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[angle=90,width=0.6\linewidth]{rectifier.jpg}
+    \caption{A look at the rectifier bridge}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{multimeter_semiconductorDC2.png}
+    \caption{Obtaining the correct Multimeter reading}
+\end{figure}
+\end{itemize}
+
+\subsection*{\textbf{Phase 3:} Smoothing Filter Integration ($100\mu\text{F}$ Capacitor)}
+
+\begin{itemize}
+    \item \textbf{Objective:} Integrate an electrolytic reservoir capacitor across the rectified output rails to filter the $100\text{ Hz}$ pulsating DC waveform into a continuous, low-ripple unregulated DC rail, providing sufficient input voltage headroom for subsequent linear regulation.
+
+    \item \textbf{Capacitive Smoothing Mechanics and Peak Detection:} The raw output of the diode bridge consists of pulsating half-sine humps that periodically fall to $0\text{ V}$. A $100\,\mu\text{F}$ electrolytic capacitor was placed directly in parallel across the DC output rails of the bridge (positive lead to the positive output rail at Column I, negative lead to common return at Column K). The capacitor functions as a low-impedance energy reservoir:
+    \begin{enumerate}
+        \item As the pulsating voltage rises toward its quarter-cycle peak, the diodes forward-bias, charging the capacitor to the absolute peak potential minus the series diode drops.
+        \item Once the rectified input drops below the peak, the diodes become reverse-biased and shut off. The capacitor then discharges its stored charge into the load, sustaining the rail potential between successive cycles and preventing the voltage from collapsing to $0\text{ V}$.
+    \end{enumerate}
+
+    \item \textbf{Average vs. Peak Measurement and Mathematical Derivation:} Prior to capacitive filtering, the Fluke 101 multimeter calculated the mathematical average of the pulsating humps, yielding an effective reading of $11.75\text{ V}$ DC. The capacitor fundamentally changes this dynamic by capturing and holding the absolute physical peak of the sine wave ($V_{\text{RMS}} \times \sqrt{2}$). For a nominal secondary voltage of $13.26\text{ V}$ RMS, the expected DC peak is:
+    \begin{align}
+        V_{\text{DC(expected)}} &= (13.26\text{ V} \times \sqrt{2}) - 1.50\text{ V} \approx 17.25\text{ V}
+    \end{align}
+    However, because the step-down transformer's output scales directly with real-time fluctuations in the $230\text{ V}$ AC wall mains, the secondary RMS voltage during testing was slightly elevated. To yield the precise $18.27\text{ V}$ DC measured by the multimeter, the actual secondary RMS voltage at that moment is derived as follows:
+    \begin{align}
+        V_{\text{DC(actual)}} &= (V_{\text{RMS(actual)}} \times \sqrt{2}) - 2V_F \nonumber \\
+        18.27\text{ V} &= (V_{\text{RMS(actual)}} \times 1.4142) - 1.50\text{ V} \nonumber \\
+        V_{\text{RMS(actual)}} &= \frac{18.27\text{ V} + 1.50\text{ V}}{1.4142} \approx 13.98\text{ V}
+    \end{align}
+    This demonstrates that a momentary mains surge pushing the secondary to $\sim 13.98\text{ V}$ RMS was perfectly captured and held by the capacitor.
+
+    \item \textbf{Bench Verification with Multimeter and DSO:} Probing the capacitor terminals with the Fluke 101 multimeter on DC voltage mode yielded the steady reading of $18.27\text{ V}$, confirming this successful peak capture. Probing with the digital storage oscilloscope verified that the deep $100\text{ Hz}$ zero-crossing notches were completely smoothed out, leaving an exceptionally stable, flat horizontal DC trace at approximately $1.8$ vertical divisions on a $10.0\text{ V/div}$ scale.
+
+    \item \textbf{Capacitive Ripple Analysis and Open-Circuit Verification:} The peak-to-peak ripple voltage ($\Delta V_{\text{ripple}}$) across a full-wave capacitive filter is directly proportional to the current drawn by the load:
+    \begin{align}
+        \Delta V_{\text{ripple}} &= \frac{I_{\text{load}}}{2f \cdot C}
+    \end{align}
+    where $f = 50\text{ Hz}$ (rectified frequency $2f = 100\text{ Hz}$) and $C = 100\,\mu\text{F}$. During this specific DSO measurement phase, the circuit was in a completely unloaded, open-circuit state ($I_{\text{load}} \approx 0\text{ A}$).
+    \begin{align}
+        \Delta V_{\text{ripple(unloaded)}} &= \frac{0\text{ A}}{100\text{ Hz} \times 100 \times 10^{-6}\text{ F}} = 0\text{ V}
+    \end{align}
+    This mathematical zero-ripple calculation perfectly correlates with the visual evidence from the oscilloscope, which displays a completely flat DC line with nearly no visible ripple. The ripple effect will only manifest later in the circuit's operation when the 7805 regulator and mobile device are connected and begin drawing current from this capacitive reservoir.
+\end{itemize}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\linewidth]{Capacitor_18V_out_dso.png}
+        \caption{Oscilloscope verification confirming the smoothed $\sim 18\text{ V}$ DC rail across the $100\,\mu\text{F}$ capacitor}
+        \label{fig:capacitor_smoothing}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[angle=90,width=0.50\linewidth]{Capacitor_multimeterReading.jpeg}
+        \caption{Multimeter of Reading of $\sim18V$ across the capacitor}
+        \label{fig:capacitor_multi}
+    \end{figure}
+
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=0.50\linewidth]{Capacitor.jpg}
+        \caption{A look at the circuit with the capacitor and the rectifier}
+        \label{fig:capacitor}
+    \end{figure}
+
+\subsection*{\textbf{Phase 4: } IC 7805 Regulator Replacement and 5V Output Calibration}
+\begin{itemize}
+    \item \textbf{Configuring Placement of Regulator and Heatsink:} The LM7805 linear regulator is housed in a standard TO-220 package, but operating it reliably required a bulky heatsink which it was fortunately equipped with.
+    \begin{align}
+        P_D &= (V_{\text{IN}} - V_{\text{OUT}}) \times I_{\text{load}} \nonumber \\
+        &= (18\text{ V} - 5\text{ V}) \times 0.5\text{ A} = 6.5\text{ W}
+    \end{align}
+    Without an adequate heatsink, dissipating over $6\text{ W}$ would trigger the regulator's internal thermal shutdown within seconds. However, the combined footprint of the TO-220 package and its heatsink occupied a substantial portion of the perfboard. The layout had to be carefully planned to position the heatsink away from the $100\,\mu\text{F}$ electrolytic capacitor. The regulator was therefore mounted along the outer perimeter of the board, leaving sufficient clearance for downstream USB interface wiring.
+
+    \item \textbf{Troubleshooting Output through Regulator:} Upon completing the initial wiring and powering the board, probing the output terminal with the Fluke 101 multimeter yielded an unexpected reading of $13.0\text{ V}$ instead of the targeted $5.00\text{ V}$. Mathematically, this exactly matched the differential voltage drop across the internal pass transistor:
+    \begin{align}
+        V_{\text{diff}} &= V_{\text{IN}} - V_{\text{OUT}} = 18\text{ V} - 5\text{ V} = 13\text{ V}
+    \end{align}
+    After extensive trial and error-verifying multimeter probe orientation, reflowing the solder joints, and testing for an open or floating ground reference pin-the reading failed to stabilize at $5\text{ V}$. We concluded that the regulator IC itself had likely suffered internal junction damage or an open ground pin internally during earlier testing. Consequently, we had to desolder the IC 7805 and its heatsink using the desoldering pump, inspect the pads, and replace it with a fresh regulator IC.
+
+    \item \textbf{Obtaining 5V DC Output:} After replacing the faulty component with a new IC 7805 regulator and reconstructing the connections, the terminal pinout was meticulously traced and verified (Pin 1 for unregulated $18\text{ V}$ input, Pin 2 tied firmly to common ground, and Pin 3 routed as the $5\text{ V}$ output). Upon re-powering the transformer, the multimeter confirmed a clean, rock-solid $5.00\text{ V}$ DC output across the regulator terminals.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.55\linewidth]{multimeter_regulatorReading.jpeg}
+        \caption{Multimeter verification confirming the calibrated $5.00\text{ V}$ DC regulated output}
+        \label{fig:regulator_5v_reading}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.55\linewidth]{regulator_circuit.jpeg}
+        \caption{LM7805 regulator with attached aluminum heatsink mounted on the perfboard}
+        \label{fig:regulator_heatsink_assembly}
+    \end{figure}
+\end{itemize}
+
+\subsection*{\textbf{Phase 5:} USB Data Pin Bridging (DCP Protocol) and LED Indicator}
+\begin{itemize}
+   
+\item\textbf{Hardware Integration and Pin Mapping:}
+The final stage of the AC-to-DC power supply involves transferring the regulated $5\text{ V}$ DC rail to a standard female USB Type-A receptacle. The USB Type-A connector consists of four primary pins which must be precisely mapped to the perf board rails:
+\begin{itemize}
+    \item \textbf{Pin 1 (VCC / Far Right):} Solder-bridged directly to the $5\text{ V}$ regulated output rail (Column N).
+    \item \textbf{Pin 2 (D- / Middle Left):} USB Data Minus.
+    \item \textbf{Pin 3 (D+ / Middle Right):} USB Data Plus.
+    \item \textbf{Pin 4 (GND / Far Left):} Solder-bridged to the common ground rail (Column O).
+\end{itemize}
+
+\item\textbf{Dedicated Charging Port (DCP) Protocol Implementation:}
+Modern smartphones employ protective circuitry that monitors the USB data lines (D- and D+) before drawing significant current from an unknown source. On our first attempt at trying to check the working of the USB, we were shocked to see that our phones were not charging, despite accurate multimeter readings and checking with our peers.
+
+We later realized that we connected the pins in an opposite manner. Thankfully this did not fry our mobile phones....
+
+\item\textbf{Pre-Load Verification and Polarity Testing:}
+Prior to attaching a load, the port's integrity was verified using a Fluke 101 digital multimeter set to DC Voltage. 
+
+By powering the live circuit and probing the copper-side solder joints directly (red probe to Column N, black probe to Column O), the instrument displayed a stable, positive $+5.00\text{ V}$ DC. The nearly perfect $5\text{ V}$ reading validated the thermal stability of the 7805 regulator, while the absence of a negative sign mathematically proved that the VCC and GND pins were correctly polarized and safe for device connection.
+
+  \begin{figure}[H]
+        \centering
+        \includegraphics[angle=90,width=0.55\linewidth]{beforeLedCharge.jpeg}
+        \caption{Correct working of the USB pin}
+        \label{fig:regulator_heatsink_assembly}
+    \end{figure}
+      \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.55\linewidth]{withoutLedCircuit.jpeg}
+        \caption{A picture of the circuit}
+        \label{fig:regulator_heatsink_assembly}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.55\linewidth]{usbOutput.jpeg}
+        \caption{USB Voltage output ~$5.00\text{ V}$ DC regulated output}
+        \label{fig:regulator_5v_reading}
+    \end{figure}
+
+    \item \textbf{Power Indication Logic and Hardware Placement:} To provide immediate visual confirmation that the step-down circuit is live and the 7805 IC is successfully outputting regulated power, a standard red Light Emitting Diode (LED) was integrated into the final stage of the perfboard. The indicator network is wired in parallel directly across the regulated $5\text{ V}$ rail and the common ground.
+
+    \item \textbf{Current-Limiting Resistor Configuration:} LEDs possess very low internal resistance once their forward voltage threshold is crossed. Connecting the diode directly across the $5\text{ V}$ output would draw excessive current, instantly destroying the semiconductor junction and potentially destabilizing the USB charging rail. To prevent this, a $680\,\Omega$ current-limiting resistor was placed in series with the red LED.
+
+    \item \textbf{Operating Current Derivation:} The integration of the $680\,\Omega$ resistor provides a safe, highly efficient operating current for visual indication without leeching significant power from the mobile device load. Assuming a standard red LED forward voltage drop ($V_F$) of approximately $2.0\text{ V}$:
+    \begin{align}
+        I_{\text{LED}} &= \frac{V_{\text{out}} - V_F}{R} \nonumber \\
+        &= \frac{5.0\text{ V} - 2.0\text{ V}}{680\,\Omega} \nonumber \\
+        &= \frac{3.0\text{ V}}{680\,\Omega} \approx 4.41\text{ mA}
+    \end{align}
+    This continuous $\sim 4.4\text{ mA}$ current draw is well below the standard $20\text{ mA}$ absolute maximum rating for typical $5\text{ mm}$ LEDs. It ensures long-term component lifespan and negligible thermal buildup while glowing brightly enough to verify an active $5\text{ V}$ output state.
+\begin{figure}[H]
+        \centering
+        \includegraphics[angle=180,width=0.6\linewidth]{led_crossVolt.jpeg}
+        \caption{Voltage across LED ($1.886V$)}
+        \label{fig:regulator_heatsink_assembly}
+    \end{figure}
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=0.55\linewidth]{charging.jpeg}
+        \caption{Charging of circuit alongside the LED}
+        \label{fig:regulator_heatsink_assembly}
+    \end{figure}
+\end{itemize}
+\newpage
+\subsection*{\textbf{Phase 6:}  3D modelling challenges in FreeCAD }
+\begin{itemize}
+    
+
+    \item \textbf{A Final Look at the 3D Model:}
+    \begin{figure}[H]
+        \centering
+        % Placeholder 1
+        \includegraphics[width=0.6\textwidth]{final_model_view1.png} 
+        \caption{A neat look at the finished 3D model}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        % Placeholder 2
+        \includegraphics[width=0.5\textwidth]{final_model_view2.png} 
+        \caption{A neat look at the finished 3D model}
+    \end{figure}
+
+    \begin{figure}[H]
+        \centering
+        % Placeholder 3
+        \includegraphics[width=0.55\textwidth]{final_model_view3.png} 
+        \caption{A neat look at the finished 3D model}
+    \end{figure}
+    \end{itemize}
+    \begin{itemize}
+        
+   
+    \item \textbf{The Development Procedure:}
+
+    \item \textbf{Step 1: Setting the initial sketch on the xy plane}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\textwidth]{step1_xy_sketch.png}
+        \caption{Initial 2D sketch layout mapped on the XY plane}
+    \end{figure}
+    \newpage
+    
+    \item \textbf{Step 2: Adding padding}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\textwidth]{step2_padding.png}
+        \caption{Applying padding to establish the foundational base}
+    \end{figure}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.6\textwidth]{hollow.png}
+        \caption{Hollowing the padded object so as to prepare internal structures}
+    \end{figure}
+    \newpage
+    
+    \item \textbf{Step 3: Adding a small slit to allow the wire to be placed before the upper lid is placed}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.55\textwidth]{step5_wire_slit.png}
+        \caption{Creating a routing slit for the main AC power wire}
+    \end{figure}
+    
+    \item \textbf{Step 4: Smoothening the corners and outer edges (except the top where the lid will come)}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.6\textwidth]{step3_smoothening.png}
+        \caption{Filleting the corners and outer edges for aesthetic and structural refinement}
+    \end{figure}
+
+    \item \textbf{Step 5: Attempting to accurately measure each component and adding proper clearance to each structure}
+    
+    During this phase, we aimed to provide a standard 1-2 mm clearance around each physical component. Determining the exact tolerance was notably difficult due to the irregular, hand-soldered dimensions of our perf board and the bulky metal tabs of the transformer. This step introduced a significant amount of anxiety into the design process; we were constantly second-guessing whether this 1-2 mm buffer would be too tight---which would prevent the hardware from fitting and force a time-consuming 3D reprint---or too loose, which would leave the live circuit rattling around inside the final enclosure.
+
+    \vspace{0.5cm}
+
+    \item \textbf{Step 6: Adding a wall boundary to differentiate between the transformer and the PCB}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\textwidth]{step6_internal_wall.png}
+        \caption{Extruding an internal boundary wall for component isolation}
+    \end{figure}
+    \newpage
+    
+    \item \textbf{Step 7: Fixing the transformer in place with 2 short walls to hold the transformer in place}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.6\textwidth]{step7_transformer_mount1.png}
+        \caption{Designing the first short retaining wall for the transformer}
+    \end{figure}
+
+    \item \textbf{Step 8: Adding 2 slits on the other side for the PCB to slide in}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.6\textwidth]{step8.png}
+        \caption{Designing 2 slits for the pcb to slide into taking clearance into consideration}
+    \end{figure}
+    \vspace{0.5cm}
+
+    \item \textbf{Step 9: Adding multiple vertical slits for influx and removal of air for heatsink}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\textwidth]{step9_ventilation.png}
+        \caption{Vertical ventilation slits added for passive IC 7805 thermal management}
+    \end{figure}
+
+    \item \textbf{Step 10: Adding holes for M3 0.5 inch screws}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\textwidth]{step10_screw_holes.png}
+        \caption{Precision mounting holes configured for M3 hardware}
+    \end{figure}
+    \newpage
+    \item \textbf{Step 11: Preparing lid for opening to allow USB to be plugged in and LED light glow to be visible}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.7\textwidth]{step11_lid_cutouts.png}
+        \caption{Final lid preparation detailing the USB-A port cutout and LED indicator window}
+    \end{figure}
+     \end{itemize}
+     \newpage
+		\section{Project Reflections and Learning Outcomes}
+		
+\subsection{A Beginner's Perspective on Power Electronics}
+Jumping into practical power electronics was completely new territory for us. Actually seeing theoretical AC-to-DC conversion concepts turn into a physical, functioning power supply was a massive shift. Moving from ideal circuit diagrams to soldering a step-down transformer, discrete diodes, and a 7805 regulator meant we had to figure out how real-world hardware behaves. We spent hours wrapping our heads around AC RMS versus peak voltages, capacitor smoothing dynamics, and thermal dissipation, slowly realizing what our components were actually doing to the waveform, cycle by cycle.
+		
+\subsection{Collaborative Troubleshooting and Conceptual Growth}
+We quickly realized that combining transformers, bridge rectifiers, and linear regulators meant hardware bugs were just part of the process. When the digital storage oscilloscope (DSO) revealed a distorted 50 Hz output instead of a clean 100 Hz rectified wave, we couldn't just guess the fix---we had to learn to isolate the problem step by step. We tore down the initial perf board, checking what each discrete diode was actually doing versus what it was supposed to do. Documenting everything in \LaTeX\ was its own battle. Fighting with formatting syntax and staring at cryptic compiler errors was frustrating at first, but finally getting it to auto-generate our table of contents and organize our hardware logs felt like a huge win.
+		
+\subsection{Hardware Frustrations and Physical Challenges}
+Despite the successes in our theoretical calculations, the physical circuit building frequently tested our patience. First and foremost was the overwhelming reality of soldering on a perf board. Routing copper traces and ensuring robust, short-circuit-free connections for mains-derived voltages required meticulous layout planning and steady hands. Tracing a faulty diode connection on our first board was a tedious process, ultimately forcing us to migrate the entire circuit to a completely new board to guarantee integrity. 
+
+Another major hurdle in our physical assembly was dealing with the LM7805 linear voltage regulator.During our initial bench testing, the first 7805 regulator completely failed to sustain the output. While we strongly suspect the extreme $13\text{ V}$ differential caused a rapid thermal failure, we never definitively confirmed if it cooked itself or was just a faulty component out of the box. Regardless of the actual cause, having to physically rework the board was incredibly annoying. Carefully desoldering the dead TO-220 package from the dense perf board without lifting the copper pads or melting adjacent wire insulation was a tedious, frustrating setback. We had to clean the through-holes, align a replacement IC, re-apply thermal compound for the heatsink, and solder it all back together from scratch before the circuit finally delivered a reliable $5\text{ V}$ output.
+
+Lastly, the 3D modelling and enclosure design presented its own unique headaches. Attempting to accurately measure hand-soldered, asymmetrical components and bulky transformer tabs to provide a precise 1-2 mm clearance was a stressful trial-and-error process. We were constantly anxious about whether the final 3D print would be too tight---forcing a reprint---or too loose, making the alignment of the USB-A port and LED indicator into the plastic lid a painstaking task.Additionally the lid uses screws, this only added to our anxiety as we would now be taking the risk of positioning the screw holes aptly.
+		
+\subsection{Final Thoughts}
+What started as a massive checklist, which included soldering bridge rectifiers, bridging USB DCP data pins, and designing 3D enclosures, actually turned into a working mobile charger. We finally understand what every single component does and how the raw AC mains power is tamed into a safe, regulated $5\text{ V}$ DC output. All the frustration over perhaps burnt regulators, distorted oscilloscope traces, and tight 3D printing clearances faded the second the red indicator LED lit up and the smartphone successfully started charging.
+\newpage
+\section{Teamwork and Acknowledgements}
+		
+\subsection*{Reflections on Teamwork}
+The successful completion of this AC-to-DC mobile charger was a direct result of dedicated teamwork and collaborative problem-solving. Bridging the gap between theoretical power electronics and physical hardware assembly required a strategic division of labor. Tasks were distributed to leverage individual strengths, encompassing everything from soldering the discrete full-wave bridge rectifier and integrating the LM7805 regulator to designing the custom 3D-printed enclosure with precise physical tolerances. 
+		
+Throughout the project-making lifecycle, communication was our most valuable tool. When faced with complex hardware challenges-such as diagnosing a faulty diode via the digital storage oscilloscope (DSO), completely migrating the circuit to a new perf board, or resolving the extreme thermal dissipation of our initial voltage regulator-we relied on intensive, collective brainstorming.
+		
+\subsection*{Acknowledgements}
+As a three-person team, we would like to express our sincere gratitude to everyone who supported us in the realization of this project:
+		
+\begin{itemize}
+	\item \textbf{Project Advisors \& Instructors:} For their invaluable guidance, technical expertise, and continuous encouragement from initial component layout all the way to final hardware verification. 
+	\item \textbf{Lab Staff \& Technicians:} For providing access to the necessary soldering stations, multimeters, Tektronix oscilloscopes, and a safe, conducive environment for circuit assembly and mains-voltage testing.
+	\item \textbf{Artificial Intelligence Tools:} We extend our appreciation to the AI assistants that served as our primary reference throughout the development workflow. Relying heavily on AI tools rather than traditional open-source documentation allowed us to rapidly troubleshoot hardware issues and clarify complex concepts.
+	\item \textbf{Peers \& Testers:} Finally, a special thank you to our peers who reviewed our 3D enclosure designs and provided practical feedback during the testing of the USB interface.
+\end{itemize}
+\end{document}
